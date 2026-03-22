@@ -41,8 +41,8 @@ class TraditionalMLClassifier:
                 probability=True,
                 class_weight='balanced',  # Handle imbalance
                 random_state=42,
-                verbose=True,
-                cache_size=1000  # Use more memory for faster training
+                verbose=False,  # Silence the spam!
+                cache_size=self.config.get('svm_cache_size', 4000)  # Use config cache size
             )
         elif self.classifier_type == 'random_forest':
             self.model = RandomForestClassifier(
@@ -52,7 +52,7 @@ class TraditionalMLClassifier:
                 class_weight='balanced',
                 n_jobs=self.config.get('n_jobs', -1),
                 random_state=42,
-                verbose=1
+                verbose=0  # Silence output
             )
         else:
             raise ValueError(f"Unknown classifier type: {self.classifier_type}")

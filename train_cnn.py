@@ -372,7 +372,7 @@ def main(args):
     model, criterion = create_model(num_classes, cfg, device)
 
     # Get class weights for loss function
-    train_labels = [label for _, label in train_loader.dataset]
+    train_labels = train_loader.dataset.labels
     class_weights = compute_class_weights(
         train_labels,
         strategy=config.CLASS_BALANCE_STRATEGY,

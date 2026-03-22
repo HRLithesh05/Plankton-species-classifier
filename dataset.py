@@ -48,7 +48,8 @@ def get_class_mapping(data_dir: Path) -> Tuple[Dict[str, int], Dict[int, str]]:
 def load_image_paths(
     data_dir: Path,
     min_samples: int = 5,
-    max_samples: Optional[int] = None
+    max_samples: Optional[int] = None,
+    exclude_classes: List[str] = None
 ) -> Tuple[List[str], List[int], Dict[str, int], Dict[int, str]]:
     """
     Load all image paths and labels from the dataset directory.
@@ -57,20 +58,32 @@ def load_image_paths(
         data_dir: Path to dataset directory
         min_samples: Minimum samples required per class
         max_samples: Maximum samples per class (None for no limit)
+        exclude_classes: List of class names to exclude
 
     Returns:
         image_paths, labels, class_to_idx, idx_to_class
     """
+    if exclude_classes is None:
+        exclude_classes = []
+
     class_to_idx, idx_to_class = get_class_mapping(data_dir)
 
     image_paths = []
     labels = []
     class_counts = Counter()
     skipped_classes = []
+    excluded_classes_found = []
 
     print(f"Loading images from {data_dir}...")
+    if exclude_classes:
+        print(f"Excluding classes: {exclude_classes}")
 
     for class_name, class_idx in tqdm(class_to_idx.items(), desc="Scanning classes"):
+        # Skip excluded classes
+        if class_name in exclude_classes:
+            excluded_classes_found.append(class_name)
+            continue
+
         class_dir = data_dir / class_name
 
         # Find all images in this class
@@ -92,10 +105,17 @@ def load_image_paths(
             labels.append(class_idx)
             class_counts[class_name] += 1
 
+    if excluded_classes_found:
+        print(f"\nExcluded {len(excluded_classes_found)} mega-classes:")
+        for name in excluded_classes_found:
+            print(f"  - {name}")
+
     if skipped_classes:
         print(f"\nSkipped {len(skipped_classes)} classes with < {min_samples} samples:")
-        for name, count in skipped_classes:
+        for name, count in skipped_classes[:10]:  # Show first 10
             print(f"  - {name}: {count} samples")
+        if len(skipped_classes) > 10:
+            print(f"  ... and {len(skipped_classes)-10} more")
 
     # Update mappings to only include classes with enough samples
     valid_classes = set(class_counts.keys())
@@ -263,6 +283,7 @@ def get_transforms(
 ) -> transforms.Compose:
     """
     Get image transforms for training or evaluation.
+    Balanced augmentation - not too aggressive.
     """
     # ImageNet normalization (for pretrained models)
     normalize = transforms.Normalize(
@@ -275,13 +296,14 @@ def get_transforms(
             transforms.Resize((image_size + 32, image_size + 32)),
             transforms.RandomCrop(image_size),
             transforms.RandomHorizontalFlip(p=0.5),
-            transforms.RandomVerticalFlip(p=0.5),  # Plankton can be any orientation
+            transforms.RandomVerticalFlip(p=0.5),
             transforms.RandomRotation(degrees=180),
+            # Moderate color augmentation
             transforms.ColorJitter(
-                brightness=0.2,
-                contrast=0.2,
-                saturation=0.1,
-                hue=0.05
+                brightness=0.25,
+                contrast=0.25,
+                saturation=0.15,
+                hue=0.08
             ),
             transforms.RandomAffine(
                 degrees=0,
@@ -293,6 +315,7 @@ def get_transforms(
             transforms.RandomErasing(p=0.1, scale=(0.02, 0.1)),
         ])
     else:
+        # Evaluation transforms
         return transforms.Compose([
             transforms.Resize((image_size, image_size)),
             transforms.ToTensor(),
@@ -316,11 +339,15 @@ def create_data_loaders(
     """
     set_seed(config.RANDOM_SEED)
 
+    # Get exclude list from config if it exists
+    exclude_classes = getattr(config, 'EXCLUDE_CLASSES', [])
+
     # Load image paths and labels
     image_paths, labels, class_to_idx, idx_to_class = load_image_paths(
         config.DATA_DIR,
         min_samples=config.MIN_SAMPLES_PER_CLASS,
-        max_samples=config.MAX_SAMPLES_PER_CLASS
+        max_samples=config.MAX_SAMPLES_PER_CLASS,
+        exclude_classes=exclude_classes
     )
 
     # Split dataset
@@ -534,11 +561,15 @@ def prepare_traditional_ml_data(
 
     set_seed(config.RANDOM_SEED)
 
+    # Get exclude list from config if it exists
+    exclude_classes = getattr(config, 'EXCLUDE_CLASSES', [])
+
     # Load paths
     image_paths, labels, class_to_idx, idx_to_class = load_image_paths(
         config.DATA_DIR,
         min_samples=config.MIN_SAMPLES_PER_CLASS,
-        max_samples=max_samples or config.TRADITIONAL_ML_CONFIG['max_train_samples']
+        max_samples=max_samples or config.TRADITIONAL_ML_CONFIG['max_train_samples'],
+        exclude_classes=exclude_classes
     )
 
     # Split

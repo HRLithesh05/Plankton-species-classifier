@@ -201,10 +201,15 @@ def main(args):
 
     # Load image paths
     logger.info("\nLoading image paths...")
+
+    # Get exclude list from config if it exists
+    exclude_classes = getattr(config, 'EXCLUDE_CLASSES', [])
+
     image_paths, labels, class_to_idx, idx_to_class = load_image_paths(
         config.DATA_DIR,
         min_samples=config.MIN_SAMPLES_PER_CLASS,
-        max_samples=cfg['max_train_samples']
+        max_samples=cfg['max_train_samples'],
+        exclude_classes=exclude_classes
     )
 
     num_classes = len(class_to_idx)

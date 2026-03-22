@@ -37,58 +37,59 @@ RANDOM_SEED = 42
 # Options: 'undersample', 'oversample', 'weighted', 'sqrt_weighted'
 CLASS_BALANCE_STRATEGY = 'sqrt_weighted'
 
-# Minimum samples per class to include
-MIN_SAMPLES_PER_CLASS = 5
+# CRITICAL: Better filtering to handle extreme imbalance
+MIN_SAMPLES_PER_CLASS = 20  # Increased from 5 - remove tiny classes
+MAX_SAMPLES_PER_CLASS = 2000  # Reduced from 5000 - cap giant classes!
 
-# Maximum samples per class for training (to handle extreme imbalance)
-MAX_SAMPLES_PER_CLASS = 5000
+# Exclude problematic classes (too generic/noisy)
+EXCLUDE_CLASSES = ['mix', 'detritus', 'mix_elongated']  # Remove mega-classes
 
 # =============================================================================
 # CNN TRAINING SETTINGS (EfficientNetV2-B0)
 # Optimized for RTX 4060 Ti (8.59 GB VRAM)
 # =============================================================================
 CNN_CONFIG = {
-    # Model
-    'model_name': 'efficientnet_v2_s',  # 's' fits well in 8GB VRAM
+    # Model - Proven working model
+    'model_name': 'efficientnet_v2_s',
     'pretrained': True,
-    'freeze_backbone': True,  # Phase 1: only train classifier head
+    'freeze_backbone': True,
 
     # Training Phase 1 (frozen backbone)
-    'batch_size': 32,  # Safe for 8GB VRAM
-    'epochs_frozen': 15,
-    'learning_rate_frozen': 1e-3,
+    'batch_size': 32,
+    'epochs_frozen': 35,  # More epochs for cleaner dataset
+    'learning_rate_frozen': 2e-3,  # Slightly higher LR
 
     # Training Phase 2 (fine-tuning)
-    'epochs_finetune': 15,
-    'learning_rate_finetune': 1e-5,
-    'unfreeze_layers': 50,  # Number of layers to unfreeze from end
+    'epochs_finetune': 35,  # More epochs
+    'learning_rate_finetune': 3e-5,  # Higher than 1e-5
+    'unfreeze_layers': 60,  # Moderate unfreezing
 
     # Optimizer
     'optimizer': 'adamw',
-    'weight_decay': 0.01,
+    'weight_decay': 0.01,  # Moderate regularization
 
     # Scheduler
     'scheduler': 'cosine',
-    'warmup_epochs': 2,
+    'warmup_epochs': 3,
 
-    # Regularization
-    'dropout': 0.3,
-    'label_smoothing': 0.1,
+    # Regularization - BALANCED for cleaner data
+    'dropout': 0.3,  # Lower since data is cleaner
+    'label_smoothing': 0.1,  # Moderate
 
     # Early stopping
-    'patience': 7,
+    'patience': 12,
     'min_delta': 0.001,
 
-    # Data augmentation (handled in dataset.py)
+    # Data augmentation
     'augmentation': True,
 
-    # Mixed precision training (for faster training on RTX 4060 Ti)
+    # Mixed precision training
     'mixed_precision': True,
 
-    # Gradient accumulation (effective larger batch size)
+    # Gradient accumulation
     'gradient_accumulation_steps': 2,
 
-    # Number of workers for data loading
+    # Number of workers
     'num_workers': 4,
 }
 
@@ -112,16 +113,18 @@ TRADITIONAL_ML_CONFIG = {
     'svm_kernel': 'rbf',
     'svm_C': 10,
     'svm_gamma': 'scale',
+    'svm_cache_size': 4000,  # Use 4GB RAM cache for faster SVM
 
     # Random Forest parameters
     'rf_n_estimators': 300,
     'rf_max_depth': None,
     'rf_min_samples_split': 2,
 
-    # Max samples for traditional ML (memory constraint)
-    'max_train_samples': 50000,
+    # Max samples for traditional ML (REDUCED for speed!)
+    # With 88 classes, even 500/class = 44K total samples
+    'max_train_samples': 500,  # Was 50000 - TOO MANY!
 
-    # Number of parallel jobs
+    # Number of parallel jobs (-1 = use ALL CPU cores)
     'n_jobs': -1,
 }
 
