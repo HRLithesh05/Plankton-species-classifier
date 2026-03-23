@@ -1,0 +1,227 @@
+{
+  "acantharia_protist": {
+    "common_name": "Acantharia Protist",
+    "scientific_name": "Acantharea",
+    "description": "Marine protists with distinctive radial symmetry and spines made of strontium sulfate.",
+    "characteristics": [
+      "Radial symmetry with central capsule",
+      "Spines composed of strontium sulfate (celestite)",
+      "Typically 100-500 micrometers in diameter",
+      "Pseudopodia extend through pores in central capsule"
+    ],
+    "habitat": "Marine pelagic zones, primarily in warmer waters",
+    "size_range": "100-500 μm",
+    "ecological_role": "Primary producers, contribute to marine food webs and biogeochemical cycles",
+    "distribution": "Worldwide in marine environments"
+  },
+  "appendicularian_s_shape": {
+    "common_name": "S-shaped Appendicularian",
+    "scientific_name": "Appendicularia",
+    "description": "Small planktonic tunicates that build mucous houses for filter feeding.",
+    "characteristics": [
+      "Transparent, gelatinous body",
+      "Characteristic S-shaped tail",
+      "Build and inhabit mucous houses",
+      "Rapid movement with tail beating"
+    ],
+    "habitat": "Marine pelagic environments",
+    "size_range": "1-5 mm",
+    "ecological_role": "Filter feeders, important in marine carbon cycling",
+    "distribution": "Global marine distribution"
+  },
+  "chaetoceros": {
+    "common_name": "Chaetoceros Diatom",
+    "scientific_name": "Chaetoceros spp.",
+    "description": "Chain-forming diatoms with distinctive bristle-like setae extending from the cell walls.",
+    "characteristics": [
+      "Form long chains of cells",
+      "Bristle-like setae (spines) extending from cells",
+      "Silica cell walls (frustules)",
+      "Photosynthetic with chloroplasts"
+    ],
+    "habitat": "Marine and freshwater environments",
+    "size_range": "10-50 μm per cell",
+    "ecological_role": "Primary producers, major contributors to marine photosynthesis and oxygen production",
+    "distribution": "Cosmopolitan in marine waters"
+  },
+  "copepod_calanoid": {
+    "common_name": "Calanoid Copepod",
+    "scientific_name": "Calanoida",
+    "description": "Small marine crustaceans that are key members of zooplankton communities.",
+    "characteristics": [
+      "Elongated first antennae",
+      "Segmented body with distinct cephalothorax and abdomen",
+      "Swimming appendages (pleopods)",
+      "Large compound eyes in some species"
+    ],
+    "habitat": "Marine pelagic zones worldwide",
+    "size_range": "1-5 mm",
+    "ecological_role": "Primary consumers, critical food source for fish larvae and other marine organisms",
+    "distribution": "Global marine distribution, from surface to deep waters"
+  },
+  "copepod_cyclopoid": {
+    "common_name": "Cyclopoid Copepod",
+    "scientific_name": "Cyclopoida",
+    "description": "Small copepods with shorter antennae and more compact body structure than calanoids.",
+    "characteristics": [
+      "Shorter first antennae than calanoids",
+      "More compact, robust body structure",
+      "Often carry egg sacs",
+      "Strong swimming capabilities"
+    ],
+    "habitat": "Marine and freshwater environments",
+    "size_range": "0.5-2 mm",
+    "ecological_role": "Predatory and omnivorous feeding, important in energy transfer",
+    "distribution": "Worldwide in aquatic environments"
+  },
+  "copepod_other": {
+    "common_name": "Other Copepods",
+    "scientific_name": "Copepoda (various)",
+    "description": "Diverse group of small crustaceans including harpacticoids and other families.",
+    "characteristics": [
+      "Highly diverse morphology",
+      "Segmented crustacean body plan",
+      "Various feeding strategies",
+      "Important component of meiofauna and plankton"
+    ],
+    "habitat": "All aquatic environments",
+    "size_range": "0.2-10 mm",
+    "ecological_role": "Diverse ecological roles from detritivores to predators",
+    "distribution": "Ubiquitous in aquatic ecosystems"
+  },
+  "diatom_chain": {
+    "common_name": "Chain-forming Diatom",
+    "scientific_name": "Various chain-forming genera",
+    "description": "Diatoms that form chains through cell-to-cell connections after division.",
+    "characteristics": [
+      "Cells connected in linear chains",
+      "Glass-like silica cell walls",
+      "Photosynthetic with golden-brown chloroplasts",
+      "Various chain morphologies"
+    ],
+    "habitat": "Marine and freshwater environments",
+    "size_range": "10-100 μm per cell",
+    "ecological_role": "Primary producers, form base of aquatic food webs",
+    "distribution": "Global distribution in aquatic environments"
+  },
+  "echinoderm_larva": {
+    "common_name": "Echinoderm Larva",
+    "scientific_name": "Echinodermata (larval stage)",
+    "description": "Planktonic larvae of sea stars, sea urchins, and other echinoderms.",
+    "characteristics": [
+      "Bilateral symmetry in larval stage",
+      "Ciliated bands for locomotion and feeding",
+      "Transparent body with visible internal structures",
+      "Will develop into radially symmetric adult"
+    ],
+    "habitat": "Marine pelagic environments",
+    "size_range": "0.5-2 mm",
+    "ecological_role": "Planktonic development stage, part of marine life cycles",
+    "distribution": "Marine environments worldwide"
+  },
+  "ephyra": {
+    "common_name": "Ephyra (Jellyfish Larva)",
+    "scientific_name": "Scyphozoa (ephyra stage)",
+    "description": "Young stage of scyphozoan jellyfish with distinctive eight-lobed appearance.",
+    "characteristics": [
+      "Eight marginal lobes",
+      "Bell-shaped body",
+      "Simple nervous system",
+      "Beginning of medusa development"
+    ],
+    "habitat": "Marine pelagic waters",
+    "size_range": "2-10 mm",
+    "ecological_role": "Developmental stage in jellyfish life cycle",
+    "distribution": "Marine waters where adult jellyfish are found"
+  },
+  "fish_larvae": {
+    "common_name": "Fish Larvae",
+    "scientific_name": "Various fish species (larval stage)",
+    "description": "Early developmental stages of marine fish, part of the zooplankton community.",
+    "characteristics": [
+      "Elongated body with developing fins",
+      "Large yolk sac in early stages",
+      "Developing eyes and mouth",
+      "Swimming behavior varies by species"
+    ],
+    "habitat": "Marine pelagic waters",
+    "size_range": "2-20 mm",
+    "ecological_role": "Recruitment stage for fish populations, prey for other organisms",
+    "distribution": "Marine waters worldwide"
+  },
+  "gastropod_larva": {
+    "common_name": "Gastropod Larva",
+    "scientific_name": "Gastropoda (larval stage)",
+    "description": "Planktonic larvae of snails and other gastropod mollusks.",
+    "characteristics": [
+      "Ciliated velum for swimming and feeding",
+      "Developing shell in some species",
+      "Torsion process during development",
+      "Metamorphosis to adult form"
+    ],
+    "habitat": "Marine and some freshwater environments",
+    "size_range": "0.2-2 mm",
+    "ecological_role": "Dispersal stage for gastropod populations",
+    "distribution": "Aquatic environments globally"
+  },
+  "hydromedusae_h15": {
+    "common_name": "Hydromedusa H15",
+    "scientific_name": "Hydrozoa (medusa stage)",
+    "description": "Small jellyfish representing the free-swimming stage of hydrozoan cnidarians.",
+    "characteristics": [
+      "Bell-shaped body (umbrella)",
+      "Marginal tentacles with nematocysts",
+      "Simple digestive cavity",
+      "Alternation of generations lifecycle"
+    ],
+    "habitat": "Marine pelagic waters",
+    "size_range": "1-20 mm",
+    "ecological_role": "Predators on small plankton, part of cnidarian life cycles",
+    "distribution": "Marine waters worldwide"
+  },
+  "nauplius": {
+    "common_name": "Nauplius Larva",
+    "scientific_name": "Crustacea (nauplius stage)",
+    "description": "Early larval stage of crustaceans including copepods and cirripeds.",
+    "characteristics": [
+      "Three pairs of appendages",
+      "Single median eye (nauplius eye)",
+      "Unsegmented or poorly segmented body",
+      "Swimming using appendage movements"
+    ],
+    "habitat": "Marine and freshwater environments",
+    "size_range": "0.1-1 mm",
+    "ecological_role": "Early development stage of important crustacean groups",
+    "distribution": "Wherever adult crustaceans are found"
+  },
+  "protist_other": {
+    "common_name": "Other Protists",
+    "scientific_name": "Protista (various)",
+    "description": "Diverse group of single-celled eukaryotic organisms in marine plankton.",
+    "characteristics": [
+      "Single-celled eukaryotic organisms",
+      "Diverse morphologies and lifestyles",
+      "Various modes of nutrition",
+      "Important microbial component"
+    ],
+    "habitat": "All aquatic environments",
+    "size_range": "1-500 μm",
+    "ecological_role": "Primary producers, consumers, and decomposers in microbial food webs",
+    "distribution": "Ubiquitous in aquatic ecosystems"
+  },
+  "tornaria_acorn_worm_larva": {
+    "common_name": "Tornaria (Acorn Worm Larva)",
+    "scientific_name": "Hemichordata (tornaria stage)",
+    "description": "Planktonic larva of acorn worms, showing deuterostome characteristics.",
+    "characteristics": [
+      "Ciliated bands for locomotion",
+      "Transparent body",
+      "Deuterostome development pattern",
+      "Bilateral symmetry"
+    ],
+    "habitat": "Marine pelagic waters",
+    "size_range": "0.5-2 mm",
+    "ecological_role": "Developmental stage linking to adult benthic forms",
+    "distribution": "Marine environments where adult acorn worms occur"
+  }
+}

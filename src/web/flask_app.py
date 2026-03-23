@@ -6,6 +6,8 @@ Integrating the beautiful HTML frontend with PyTorch ML models
 import os
 import json
 import base64
+import time
+from datetime import datetime
 from io import BytesIO
 from pathlib import Path
 from PIL import Image, ImageEnhance, ImageOps, ImageFilter
@@ -32,7 +34,7 @@ except ImportError:
     SCIPY_AVAILABLE = False
     print("Warning: SciPy/Scikit-image not available, using basic processing")
 
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, send_file
 from werkzeug.utils import secure_filename
 
 # Add parent directory to path for imports
@@ -562,6 +564,85 @@ def api_predict():
         traceback.print_exc()
         return jsonify({'error': f'Prediction failed: {str(e)}'}), 500
 
+@app.route('/api/predict-batch', methods=['POST'])
+def api_predict_batch():
+    """API endpoint for batch image prediction."""
+    try:
+        # Check if files were provided
+        if 'files[]' not in request.files:
+            return jsonify({'error': 'No files provided. Use "files[]" field name for multiple files.'}), 400
+
+        files = request.files.getlist('files[]')
+        if not files:
+            return jsonify({'error': 'No files received'}), 400
+
+        # Limit batch size for performance
+        max_batch_size = 50
+        if len(files) > max_batch_size:
+            return jsonify({'error': f'Batch size limited to {max_batch_size} files. Received {len(files)} files.'}), 400
+
+        results = []
+        processed_count = 0
+
+        # Get optional parameters
+        top_k = int(request.form.get('top_k', 5))
+        top_k = min(max(top_k, 1), 10)  # Limit between 1-10
+
+        for i, file in enumerate(files):
+            if file.filename == '':
+                results.append({
+                    'index': i,
+                    'filename': 'empty_file',
+                    'success': False,
+                    'error': 'Empty filename'
+                })
+                continue
+
+            try:
+                # Load and predict image
+                image = Image.open(file.stream)
+                predictions = predict_image_with_tta(image, top_k=top_k)
+
+                if predictions:
+                    results.append({
+                        'index': i,
+                        'filename': file.filename,
+                        'success': True,
+                        'predictions': predictions,
+                        'top_prediction': predictions[0]
+                    })
+                    processed_count += 1
+                else:
+                    results.append({
+                        'index': i,
+                        'filename': file.filename,
+                        'success': False,
+                        'error': 'Failed to generate predictions'
+                    })
+
+            except Exception as e:
+                results.append({
+                    'index': i,
+                    'filename': file.filename,
+                    'success': False,
+                    'error': str(e)
+                })
+
+        return jsonify({
+            'success': True,
+            'total_files': len(files),
+            'processed_successfully': processed_count,
+            'failed': len(files) - processed_count,
+            'results': results,
+            'batch_id': f"batch_{int(time.time())}"
+        })
+
+    except Exception as e:
+        print(f"Error in batch prediction API: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Batch prediction failed: {str(e)}'}), 500
+
 @app.route('/api/model-info')
 def model_info():
     """Get model information."""
@@ -575,6 +656,225 @@ def model_info():
             'top5': 96.4
         }
     })
+
+@app.route('/api/species/<species_name>')
+def get_species_info(species_name):
+    """Get detailed information about a specific species."""
+    try:
+        # Load species database (go up two levels to project root)
+        database_path = Path(__file__).parent.parent.parent / "species_database.json"
+        if not database_path.exists():
+            return jsonify({
+                'error': 'Species database not found',
+                'species': species_name,
+                'fallback_info': {
+                    'common_name': species_name.replace('_', ' ').title(),
+                    'description': 'Detailed information not available for this species.'
+                }
+            }), 404
+
+        with open(database_path, 'r', encoding='utf-8') as f:
+            database = json.load(f)
+
+        # Clean species name (handle variations)
+        clean_name = species_name.lower().strip()
+
+        # Try exact match first
+        if clean_name in database:
+            info = database[clean_name]
+            info['species_id'] = clean_name
+            return jsonify(info)
+
+        # Try fuzzy matching for common variations
+        for db_species in database.keys():
+            if clean_name in db_species or db_species in clean_name:
+                info = database[db_species]
+                info['species_id'] = db_species
+                info['matched_name'] = clean_name
+                return jsonify(info)
+
+        # No match found
+        return jsonify({
+            'species_id': clean_name,
+            'common_name': species_name.replace('_', ' ').title(),
+            'description': 'Information not available for this species.',
+            'note': f'Species "{species_name}" not found in database. This may be a rare species or classification variant.',
+            'available_species': list(database.keys())[:10]  # Show first 10 available species
+        }), 404
+
+    except Exception as e:
+        print(f"Error loading species database: {e}")
+        return jsonify({
+            'error': f'Database error: {str(e)}',
+            'species': species_name
+        }), 500
+
+@app.route('/api/species')
+def list_all_species():
+    """Get list of all available species in the database."""
+    try:
+        database_path = Path(__file__).parent.parent.parent / "species_database.json"
+        if not database_path.exists():
+            return jsonify({'error': 'Species database not found'}), 404
+
+        with open(database_path, 'r', encoding='utf-8') as f:
+            database = json.load(f)
+
+        # Return summary of all species
+        species_list = []
+        for species_id, info in database.items():
+            species_list.append({
+                'species_id': species_id,
+                'common_name': info.get('common_name', species_id.replace('_', ' ').title()),
+                'scientific_name': info.get('scientific_name', 'Unknown'),
+                'description': info.get('description', '')[:100] + '...' if len(info.get('description', '')) > 100 else info.get('description', '')
+            })
+
+        return jsonify({
+            'total_species': len(species_list),
+            'species': sorted(species_list, key=lambda x: x['common_name'])
+        })
+
+    except Exception as e:
+        print(f"Error loading species list: {e}")
+        return jsonify({'error': f'Database error: {str(e)}'}), 500
+
+@app.route('/api/export', methods=['POST'])
+def api_export():
+    """Export prediction results to CSV or Excel format."""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+
+        results = data.get('results', [])
+        format_type = data.get('format', 'csv').lower()
+        filename_prefix = data.get('filename', 'plankton_predictions')
+
+        if not results:
+            return jsonify({'error': 'No results to export'}), 400
+
+        # Validate format
+        if format_type not in ['csv', 'excel']:
+            return jsonify({'error': 'Format must be "csv" or "excel"'}), 400
+
+        # Prepare data for export
+        export_data = []
+        for result in results:
+            if not result.get('success', False):
+                continue  # Skip failed predictions
+
+            predictions = result.get('predictions', [])
+            if not predictions:
+                continue
+
+            top_prediction = predictions[0]
+
+            # Get top 5 predictions for summary
+            top_5_species = []
+            top_5_confidences = []
+            for i, pred in enumerate(predictions[:5]):
+                top_5_species.append(pred.get('species', 'Unknown'))
+                top_5_confidences.append(f"{pred.get('confidence', 0):.2f}%")
+
+            export_data.append({
+                'Image_Name': result.get('filename', 'Unknown'),
+                'Predicted_Species': top_prediction.get('species', 'Unknown').replace('_', ' ').title(),
+                'Scientific_Name': '',  # Could be filled from species database
+                'Confidence_Percent': f"{top_prediction.get('confidence', 0):.2f}%",
+                'Confidence_Score': round(top_prediction.get('confidence', 0), 2),
+                'Top_5_Species': ' | '.join(top_5_species),
+                'Top_5_Confidences': ' | '.join(top_5_confidences),
+                'Analysis_Timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'Model_Version': 'EfficientNetV2-S v1.0',
+                'Processing_Status': 'Success'
+            })
+
+        if not export_data:
+            return jsonify({'error': 'No successful predictions to export'}), 400
+
+        # Generate timestamp for filename
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
+        if format_type == 'csv':
+            # Create CSV
+            import csv
+            output = BytesIO()
+
+            # Write CSV to string first, then encode
+            csv_content = []
+            if export_data:
+                # Write header
+                header = list(export_data[0].keys())
+                csv_content.append(','.join(f'"{field}"' for field in header))
+
+                # Write data rows
+                for row in export_data:
+                    csv_row = ','.join(f'"{str(row[field])}"' for field in header)
+                    csv_content.append(csv_row)
+
+            csv_string = '\\n'.join(csv_content)
+            output.write(csv_string.encode('utf-8'))
+            output.seek(0)
+
+            filename = f'{filename_prefix}_{timestamp}.csv'
+            mimetype = 'text/csv'
+
+            return send_file(
+                output,
+                mimetype=mimetype,
+                as_attachment=True,
+                download_name=filename
+            )
+
+        else:  # Excel format
+            try:
+                import pandas as pd
+
+                # Create DataFrame
+                df = pd.DataFrame(export_data)
+
+                # Create Excel file in memory
+                output = BytesIO()
+                with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                    df.to_excel(writer, sheet_name='Plankton_Classifications', index=False)
+
+                    # Add metadata sheet
+                    metadata = pd.DataFrame([
+                        ['Export Date', datetime.now().strftime('%Y-%m-%d %H:%M:%S')],
+                        ['Total Records', len(df)],
+                        ['Model Architecture', 'EfficientNetV2-S'],
+                        ['Model Accuracy (Top-1)', '75.5%'],
+                        ['Model Accuracy (Top-5)', '96.4%'],
+                        ['Species Classes', '54'],
+                        ['Exported By', 'Plankton Species Classifier v2.0']
+                    ], columns=['Property', 'Value'])
+
+                    metadata.to_excel(writer, sheet_name='Export_Metadata', index=False)
+
+                output.seek(0)
+
+                filename = f'{filename_prefix}_{timestamp}.xlsx'
+                mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+                return send_file(
+                    output,
+                    mimetype=mimetype,
+                    as_attachment=True,
+                    download_name=filename
+                )
+
+            except ImportError:
+                return jsonify({
+                    'error': 'Excel export not available. pandas and openpyxl libraries required.',
+                    'suggestion': 'Use CSV format instead or install: pip install pandas openpyxl'
+                }), 400
+
+    except Exception as e:
+        print(f"Error in export API: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Export failed: {str(e)}'}), 500
 
 @app.route('/static/<path:filename>')
 def static_files(filename):
