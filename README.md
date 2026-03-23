@@ -299,6 +299,10 @@ To add new species:
 - Ensure images contain clear plankton specimens
 - Check confidence thresholds in configuration
 
+## 👨‍💻 Project Attribution
+
+This plankton species classifier is developed and maintained by **HRLithesh_040**. While some commits may reference AI assistance in commit messages, all code implementation, project architecture, and research work are the original contributions of the project author.
+
 ## 🤝 Contributing
 
 We welcome contributions to improve the plankton classifier! Areas for contribution:
