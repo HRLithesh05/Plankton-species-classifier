@@ -1,40 +1,88 @@
-# Plankton Species Classifier - Requirements
-# Tested with Python 3.11.8, CUDA 12.1, RTX 4060 Ti
+# Plankton Species Classifier - Unified Requirements
+# Comprehensive dependency management for all project features
+# Tested with Python 3.8+, compatible with CUDA 11.8+ and RTX GPUs
 
 # =============================================================================
-# Core ML/DL Libraries
+# CORE MACHINE LEARNING DEPENDENCIES
 # =============================================================================
-# PyTorch (install separately with CUDA support):
-# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+# Deep Learning Framework
 torch>=2.0.0
 torchvision>=0.15.0
+torchaudio>=2.0.0
 
-# Traditional ML
+# Traditional Machine Learning
 scikit-learn>=1.3.0
+numpy>=1.24.0
+pandas>=2.0.0
+
+# =============================================================================
+# IMAGE PROCESSING & COMPUTER VISION
+# =============================================================================
+# Basic Image Processing
+Pillow>=10.0.0
+
+# Advanced Image Processing (Optional - install with pip install -e ".[advanced]")
+opencv-python>=4.8.0
+scipy>=1.7.0
 scikit-image>=0.21.0
 
 # =============================================================================
-# Data Processing
+# WEB INTERFACES
 # =============================================================================
-numpy>=1.24.0
-pandas>=2.0.0
-Pillow>=10.0.0
-opencv-python>=4.8.0
+# Streamlit Interface (install with pip install -e ".[web]")
+streamlit>=1.28.0
+plotly>=5.17.0
+
+# Flask Interface (install with pip install -e ".[web]")
+Flask>=3.0.0
+Werkzeug>=3.0.0
+requests>=2.28.0
 
 # =============================================================================
-# Utilities
+# UTILITIES & VISUALIZATION
 # =============================================================================
+# Progress Bars and Parallel Processing
 tqdm>=4.65.0
 joblib>=1.3.0
 
-# =============================================================================
-# Visualization (optional but recommended)
-# =============================================================================
+# Data Visualization
 matplotlib>=3.7.0
 seaborn>=0.12.0
 
 # =============================================================================
-# Jupyter Support (optional)
+# DEVELOPMENT TOOLS (install with pip install -e ".[dev]")
 # =============================================================================
-# jupyterlab>=4.0.0
-# ipywidgets>=8.0.0
+# Testing Framework
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Code Quality
+black>=22.0.0
+flake8>=5.0.0
+mypy>=0.991
+
+# =============================================================================
+# INSTALLATION INSTRUCTIONS
+# =============================================================================
+# RECOMMENDED: Use setup.py for modular installation
+#
+# Basic ML functionality:
+#   pip install -e .
+#
+# Web interfaces:
+#   pip install -e ".[web]"
+#
+# Advanced image processing:
+#   pip install -e ".[advanced]"
+#
+# Development tools:
+#   pip install -e ".[dev]"
+#
+# Everything:
+#   pip install -e ".[all]"
+#
+# PYTORCH WITH CUDA (install separately if needed):
+#   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+#
+# LEGACY: Install all dependencies at once
+#   pip install -r requirements.txt

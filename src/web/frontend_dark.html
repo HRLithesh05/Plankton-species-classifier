@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Oceanic Precision | Classifier Interface</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter & Space Grotesk -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=Space+Grotesk:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-container": "#5296cc",
+              "surface-container-low": "#001e35",
+              "error": "#ba1a1a",
+              "on-surface-variant": "#c3c7ce",
+              "on-primary": "#ffffff",
+              "tertiary-fixed-dim": "#ffb59c",
+              "inverse-on-surface": "#191c1e",
+              "surface": "#001627",
+              "secondary-fixed": "#5af8fb",
+              "surface-bright": "#001e35",
+              "tertiary-container": "#4f1500",
+              "on-primary-fixed": "#001d32",
+              "on-secondary-fixed-variant": "#004f51",
+              "on-secondary-fixed": "#002020",
+              "error-container": "#ffdad6",
+              "on-error": "#ffffff",
+              "surface-variant": "#42474d",
+              "secondary-container": "#004f51",
+              "on-primary-fixed-variant": "#004b74",
+              "on-tertiary-fixed-variant": "#822800",
+              "outline": "#8d9199",
+              "primary": "#94ccff",
+              "on-tertiary": "#ffffff",
+              "tertiary": "#ffb59c",
+              "inverse-surface": "#e0e3e5",
+              "surface-dim": "#0e1419",
+              "primary-container": "#004b74",
+              "surface-container-high": "#222a32",
+              "outline-variant": "#42474d",
+              "surface-container": "#191c1e",
+              "on-background": "#e0e3e5",
+              "inverse-primary": "#0c6396",
+              "on-tertiary-container": "#ffdbcf",
+              "surface-tint": "#94ccff",
+              "on-error-container": "#ffdad6",
+              "primary-fixed": "#cde5ff",
+              "on-tertiary-fixed": "#380c00",
+              "primary-fixed-dim": "#94ccff",
+              "on-secondary-container": "#56f5f8",
+              "surface-container-highest": "#33393f",
+              "secondary-fixed-dim": "#2ddbde",
+              "secondary": "#56f5f8",
+              "on-secondary": "#003738",
+              "tertiary-fixed": "#ffdbcf",
+              "background": "#001627",
+              "surface-container-lowest": "#00101b",
+              "on-surface": "#e0e3e5"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        
+        /* Custom Scan Effect for "Analyzing" state */
+        .scan-line {
+            height: 2px;
+            background: #56f5f8;
+            box-shadow: 0 0 15px #56f5f8;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            animation: scan 3s ease-in-out infinite;
+        }
+
+        @keyframes scan {
+            0%, 100% { top: 0%; }
+            50% { top: 100%; }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #222a32;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-background antialiased overflow-hidden dark">
+<!-- TopAppBar Navigation -->
+<header class="fixed top-0 w-full z-50 bg-[#001627] flex justify-between items-center px-8 h-16 w-full max-w-full mx-auto border-b border-white/5">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold text-white font-headline tracking-tight">Oceanic Precision</span>
+<nav class="hidden md:flex items-center gap-6 font-headline tracking-tight font-semibold text-sm">
+<a class="text-[#56f5f8] border-b-2 border-[#56f5f8] pb-1" href="#">Classifier</a>
+<a class="text-slate-400 hover:text-white transition-colors" href="#">Species Library</a>
+<a class="text-slate-400 hover:text-white transition-colors" href="#">Documentation</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-[#002b46] text-[#56f5f8] border border-[#56f5f8]/30 font-headline font-semibold px-4 py-2 rounded-lg text-sm transition-all hover:bg-[#003d63] hover:scale-95 duration-200">
+                Upload Data
+            </button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant/20">
+<img alt="User Scientist Profile" class="w-full h-full object-cover" data-alt="Portrait of a marine scientist in field gear" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe9UDlBhmnwtB0v9XUXs9RYzRbYiXHkgSeh8JqfATAXPEzPiDmENELBp4niFP4-wEIMMiKxW-VFHe-2m0e_PfBooOeyt3B-k2AshVm1KtM-cf6pdubv5zk4ONh9Pfeaqv4o0HcudjYVDUToYSdh5UWTviv_VFxxm4-s19AwTWMGPQWCXozvuHnmMp9hs_9iplr_m9vZHTpGdnIb2yJKHoIArt1p2UkLOq7TxweY5Zg4mMRiHSGEYf2ZqcwyQZ-UWocdJUv4EX3OeQ"/>
+</div>
+</div>
+</header>
+<div class="flex h-screen pt-16">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-16 bg-[#001627] border-r border-white/10 shadow-sm flex flex-col py-6 gap-2">
+<div class="px-6 mb-6">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-8 h-8 rounded bg-[#002b46] flex items-center justify-center border border-[#56f5f8]/20">
+<span class="material-symbols-outlined text-[#56f5f8] text-sm" data-icon="biotech">biotech</span>
+</div>
+<div>
+<h2 class="font-headline font-black text-white text-base leading-tight">Lab Dashboard</h2>
+<p class="font-label text-[10px] uppercase tracking-wider text-[#56f5f8]/60">AI Node: Alpha-7</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="bg-[#002b46] text-[#56f5f8] rounded-md font-bold px-4 py-3 mx-2 flex items-center gap-3 font-label text-sm uppercase tracking-wider group transition-transform duration-200 hover:translate-x-1 border-r-2 border-[#56f5f8]" href="#">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+                    Current Analysis
+                </a>
+<a class="text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 font-label text-sm uppercase tracking-wider group hover:bg-white/5 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                    Historical Runs
+                </a>
+<a class="text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 font-label text-sm uppercase tracking-wider group hover:bg-white/5 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="settings_input_component">settings_input_component</span>
+                    Neural Config
+                </a>
+<a class="text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 font-label text-sm uppercase tracking-wider group hover:bg-white/5 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="ios_share">ios_share</span>
+                    Export Logs
+                </a>
+</nav>
+<div class="mt-auto px-4 pb-8">
+<button class="w-full bg-[#56f5f8] text-[#001627] font-headline font-bold py-3 rounded-md shadow-lg shadow-[#56f5f8]/10 hover:shadow-[#56f5f8]/20 transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                    New Analysis
+                </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 bg-[#001627] relative overflow-y-auto custom-scrollbar p-10">
+<div class="max-w-6xl mx-auto">
+<!-- Section Header -->
+<div class="mb-12 flex justify-between items-end">
+<div class="space-y-2">
+<span class="font-label text-[#56f5f8] font-bold text-xs uppercase tracking-[0.2em]">Module 01 // Deep Sea Classification</span>
+<h1 class="text-4xl font-headline font-extrabold text-white tracking-tight">Active Neural Node</h1>
+<p class="text-slate-400 max-w-xl">Initiate high-resolution scanning of marine micro-organisms. Our proprietary AI core provides species identification with up to 99.8% precision across 4,000+ oceanic taxa.</p>
+</div>
+<div class="text-right">
+<div class="font-label text-[10px] uppercase text-slate-500 mb-1">Node Status</div>
+<div class="flex items-center gap-2 text-[#56f5f8] font-bold font-label text-sm">
+<span class="w-2 h-2 rounded-full bg-[#56f5f8] animate-pulse"></span>
+                            OPERATIONAL
+                        </div>
+</div>
+</div>
+<!-- Classification Workspace: Asymmetric Layout -->
+<div class="grid grid-cols-12 gap-10 items-start">
+<!-- Left: Upload/Dropzone Area -->
+<div class="col-span-12 lg:col-span-7">
+<div class="relative group">
+<!-- Background Layering -->
+<div class="absolute -inset-4 bg-[#56f5f8]/5 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+<div class="relative bg-[#00101b] p-2 rounded-xl border border-white/5 shadow-sm">
+<div class="border-2 border-dashed border-white/10 rounded-lg p-12 flex flex-col items-center justify-center text-center transition-all duration-300 hover:border-[#56f5f8]/50 hover:bg-[#001e35] min-h-[450px]">
+<!-- Dynamic Upload State: Empty -->
+<div class="space-y-6">
+<div class="w-20 h-20 rounded-full bg-[#002b46] flex items-center justify-center mx-auto mb-4 group-hover:bg-[#003d63] transition-colors border border-white/5">
+<span class="material-symbols-outlined text-3xl text-[#56f5f8]" data-icon="cloud_upload">cloud_upload</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-xl text-white mb-2">Ingest Visual Data</h3>
+<p class="text-slate-400 text-sm max-w-xs mx-auto">Drag and drop high-resolution microscopy images or sequence files here.</p>
+</div>
+<div class="flex flex-col items-center gap-4">
+<button class="bg-[#56f5f8] text-[#001627] font-headline font-bold px-8 py-3 rounded-md hover:translate-y-[-2px] transition-transform active:translate-y-[0px] text-sm tracking-wide">
+                                                Upload Image
+                                            </button>
+<span class="font-label text-[10px] uppercase text-slate-500 tracking-widest">Supports TIFF, PNG, DICOM (Max 500MB)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Progress Section (Hidden unless uploading) -->
+<div class="mt-8 bg-[#00101b] p-6 rounded-lg border border-white/5 shadow-sm opacity-50">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#56f5f8]" data-icon="hourglass_empty">hourglass_empty</span>
+<span class="font-headline font-bold text-sm text-white">Sequence-4429_Scan.tiff</span>
+</div>
+<span class="font-label text-xs font-bold text-[#56f5f8]">Pending Upload</span>
+</div>
+<div class="h-1.5 w-full bg-[#001e35] rounded-full overflow-hidden">
+<div class="h-full bg-[#56f5f8] w-1/3 rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Right: Analysis State / Metadata -->
+<div class="col-span-12 lg:col-span-5 space-y-8">
+<!-- Analysis Card (Simulated "Analyzing" state) -->
+<div class="bg-[#002b46] rounded-xl overflow-hidden shadow-2xl relative border border-[#56f5f8]/20">
+<div class="absolute inset-0 bg-[#001627]/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center text-white">
+<div class="relative w-full h-64 overflow-hidden mb-6 group">
+<img alt="Plankton sample" class="w-full h-full object-cover grayscale brightness-75 transition-all duration-1000" data-alt="Microscopic view of deep sea plankton organism" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCR9xqGQk5MVaAdzQJc5SNPrtsVUT3vGbA9JRcubtOHFHidMgHJ_CtMzKHksXPn8GfLX8z0pweKZqDxCqMkh3veX3ije5sweSYRbayK8EI6SomBzP3pXVVaJaMBoK6C4plXZ5CDKUOQEN2FVQWrzBvL3siB3rrVWO3t2LugTl1zeemQt01uQTJC22KsRPiQATVAyWVn-wp4nfRr59AvjRuDNs8M4stzEEkb11_tOhAAUjU4sT2fkKZU2TGHyfjhNKkgJ459f5nVNTg"/>
+<!-- Scan Effect Animation -->
+<div class="scan-line"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-[#002b46] via-transparent to-transparent"></div>
+</div>
+<div class="px-8 pb-8 text-center">
+<h4 class="font-label text-[#56f5f8] uppercase tracking-[0.3em] text-xs font-bold mb-2">Analyzing...</h4>
+<p class="font-headline text-lg font-light text-slate-300 italic mb-6">Running Ocean-Net v4 Neural Weights</p>
+<div class="flex justify-center gap-4">
+<div class="flex flex-col items-center">
+<div class="font-label text-2xl font-bold text-white">74%</div>
+<div class="font-label text-[10px] uppercase text-[#56f5f8]/60">Confidence</div>
+</div>
+<div class="w-[1px] h-10 bg-white/10"></div>
+<div class="flex flex-col items-center">
+<div class="font-label text-2xl font-bold text-white">0.4s</div>
+<div class="font-label text-[10px] uppercase text-[#56f5f8]/60">Latency</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Static placeholder behind overlay -->
+<div class="h-96 w-full bg-[#00101b]"></div>
+</div>
+<!-- Technical Specs Card -->
+<div class="bg-[#00101b] p-6 rounded-lg border border-white/5">
+<h5 class="font-label text-[10px] uppercase font-bold text-slate-500 mb-4 tracking-widest">Environment Parameters</h5>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<div class="text-[10px] text-slate-500 font-label uppercase">Depth Index</div>
+<div class="font-label font-bold text-white">4,200m</div>
+</div>
+<div class="space-y-1">
+<div class="text-[10px] text-slate-500 font-label uppercase">Salinity</div>
+<div class="font-label font-bold text-white">34.7 PSU</div>
+</div>
+<div class="space-y-1">
+<div class="text-[10px] text-slate-500 font-label uppercase">Temp</div>
+<div class="font-label font-bold text-white">2.1°C</div>
+</div>
+<div class="space-y-1">
+<div class="text-[10px] text-slate-500 font-label uppercase">AI Model</div>
+<div class="font-label font-bold text-[#56f5f8]">A7-MAR-v4</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Identifications -->
+<section class="mt-20">
+<div class="flex items-center justify-between mb-8">
+<h2 class="font-headline font-extrabold text-2xl text-white tracking-tight">Recent Session History</h2>
+<button class="text-xs font-label uppercase font-bold text-[#56f5f8] hover:text-[#5af8fb] transition-all">View Full Log</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- History Item 1 -->
+<div class="bg-[#00101b] p-4 rounded-lg group hover:bg-[#001e35] transition-all duration-300 border border-white/5">
+<div class="aspect-square rounded-md overflow-hidden mb-4 relative">
+<img alt="Historical sample" class="w-full h-full object-cover grayscale opacity-80 transition-transform duration-500 group-hover:scale-110 group-hover:grayscale-0" data-alt="Close up of a Radiolaria specimen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrLJH_KtOaAmUnGIW2FGQrt2wDI-wr2fzmDlXDTjzvMHnYmXsIyl90lm5OXxN9j4Ny9O2Ocnbsv--xTUmUbE-PgZU8L2zKLdpn-CIHnLvSSvjHTwvKulBTEeoHiaoylAZgYx2m-NJeaki3Ph1uEKy_GxsKu6rWlTg7x0VIHijzETxY3hi5yy-hHugQUp0YzI_LND8H8wRmBUEOC7kF4f4XJrP0_9aa_ppR8RMckmUlS4U66_uevT86Djg61nTt4xRkzNOIKSFGkc0"/>
+<div class="absolute top-2 right-2 bg-[#56f5f8]/90 backdrop-blur-md px-2 py-1 rounded text-[10px] text-[#001627] font-label font-bold">98.2%</div>
+</div>
+<h4 class="font-headline font-bold text-sm text-white">Radiolaria Sp.</h4>
+<p class="font-label text-[10px] text-slate-500 uppercase mt-1">Found: 2m ago</p>
+</div>
+<!-- History Item 2 -->
+<div class="bg-[#00101b] p-4 rounded-lg group hover:bg-[#001e35] transition-all duration-300 border border-white/5">
+<div class="aspect-square rounded-md overflow-hidden mb-4 relative">
+<img alt="Historical sample" class="w-full h-full object-cover grayscale opacity-80 transition-transform duration-500 group-hover:scale-110 group-hover:grayscale-0" data-alt="Microscopic jellyfish-like organism" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBucO-EYEQnxJu8pRM3PhapN_rqaHPUWfo-XaA0yNyOJnprlfeSS2n-kkfBA7jc7R7SO7T0ewVwAK1wuCoACSU4mTdE_BA_Dp-JLUnW-LaGdS7MkfrTQfmCa4ZPdBSKkhwN2id8H_PERgZq0wNy6k-Oq_FtIBkkrQ8mLQrwrc69jsTyQ0HhHexnH8tjRUhAWT-BoQqeEAUcWd-swR3iZXtSxQuLoxMkVGyj0GJ4KUV_p96ER8Oa7yQf-0P35zRcdpZBIXH7cwmDEmA"/>
+<div class="absolute top-2 right-2 bg-[#56f5f8]/90 backdrop-blur-md px-2 py-1 rounded text-[10px] text-[#001627] font-label font-bold">87.5%</div>
+</div>
+<h4 class="font-headline font-bold text-sm text-white">Copepod Nauplius</h4>
+<p class="font-label text-[10px] text-slate-500 uppercase mt-1">Found: 14m ago</p>
+</div>
+<!-- History Item 3 -->
+<div class="bg-[#00101b] p-4 rounded-lg group hover:bg-[#001e35] transition-all duration-300 border border-white/5">
+<div class="aspect-square rounded-md overflow-hidden mb-4 relative">
+<img alt="Historical sample" class="w-full h-full object-cover grayscale opacity-80 transition-transform duration-500 group-hover:scale-110 group-hover:grayscale-0" data-alt="Green algae filament structure" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBN2iV4hzSfSxJW0Mv2V4RyTFyXGa7uAwUUIT-F8QL0CrF7Xdde5qvmSPoTUAM0DdOz-SEmZI2JA5QYRa8Dz13xg2lxh3Eqku0mc1imFtHm98Xvhz1NSSq7IeMjWEmEpocOsk_iHjyRepYy2eka_lwZIwEZzmtJb2c7-FgPpyoCzreDsnRic6k7GouE2PMXo-7SmtA2sWAX_1bRdXE4qEiao-vqKKkB6BMRKzzkggwT7QZ_EgDAY8NEN4XKkTtjD442OX0J71U4kY4"/>
+<div class="absolute top-2 right-2 bg-[#56f5f8]/90 backdrop-blur-md px-2 py-1 rounded text-[10px] text-[#001627] font-label font-bold">99.1%</div>
+</div>
+<h4 class="font-headline font-bold text-sm text-white">Chaetoceros</h4>
+<p class="font-label text-[10px] text-slate-500 uppercase mt-1">Found: 42m ago</p>
+</div>
+<!-- Empty slot for ongoing -->
+<div class="border-2 border-dashed border-white/10 p-4 rounded-lg flex flex-col items-center justify-center text-center opacity-40">
+<span class="material-symbols-outlined text-[#56f5f8] mb-2" data-icon="pending">pending</span>
+<span class="font-label text-[10px] uppercase text-slate-500">Scanning Slot Available</span>
+</div>
+</div>
+</section>
+<!-- Footer Section -->
+<footer class="mt-24 w-full py-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 bg-[#00101b] font-['Inter'] text-xs font-light text-slate-400">
+<div class="flex flex-col gap-2">
+<span class="font-bold text-white">Oceanic Precision AI</span>
+<span>© 2024 Oceanic Precision AI. All rights reserved.</span>
+</div>
+<div class="flex gap-8 text-slate-500">
+<a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" href="#">Technical Specs</a>
+<a class="hover:text-white transition-colors" href="#">GitHub</a>
+<a class="hover:text-white transition-colors" href="#">Research Paper</a>
+</div>
+</footer>
+</div>
+</main>
+</div>
+</body></html>

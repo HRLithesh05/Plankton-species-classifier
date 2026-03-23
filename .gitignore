@@ -1,5 +1,7 @@
 # Dataset (large files)
 2014/
+2014_clean/
+*.zip
 *.png
 *.jpg
 *.jpeg
@@ -10,8 +12,14 @@ outputs/
 *.joblib
 *.pkl
 
-# Document files
+# Document files and temporary
 plankton_comparison.docx
+uploads/
+*.docx
+
+# Data files
+data_analysis_report.json
+dataset_stats.json
 
 # Python
 __pycache__/
