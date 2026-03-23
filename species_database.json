@@ -1,227 +1,546 @@
 {
-  "acantharia_protist": {
-    "common_name": "Acantharia Protist",
-    "scientific_name": "Acantharea",
-    "description": "Marine protists with distinctive radial symmetry and spines made of strontium sulfate.",
-    "characteristics": [
-      "Radial symmetry with central capsule",
-      "Spines composed of strontium sulfate (celestite)",
-      "Typically 100-500 micrometers in diameter",
-      "Pseudopodia extend through pores in central capsule"
-    ],
-    "habitat": "Marine pelagic zones, primarily in warmer waters",
-    "size_range": "100-500 μm",
-    "ecological_role": "Primary producers, contribute to marine food webs and biogeochemical cycles",
-    "distribution": "Worldwide in marine environments"
+  "amoeba": {
+    "common_name": "Amoeba",
+    "scientific_name": "Amoeba spp.",
+    "description": "Single-celled protozoans characterized by dynamic shape changes through cytoplasmic extensions called pseudopodia. Found in marine and freshwater environments.",
+    "habitat": "Benthic and planktonic marine environments",
+    "ecological_role": "Primary consumer, feeds on bacteria and organic matter",
+    "characteristics": "Flexible cell membrane, pseudopodia for movement and feeding, no fixed shape"
   },
-  "appendicularian_s_shape": {
-    "common_name": "S-shaped Appendicularian",
-    "scientific_name": "Appendicularia",
-    "description": "Small planktonic tunicates that build mucous houses for filter feeding.",
-    "characteristics": [
-      "Transparent, gelatinous body",
-      "Characteristic S-shaped tail",
-      "Build and inhabit mucous houses",
-      "Rapid movement with tail beating"
-    ],
-    "habitat": "Marine pelagic environments",
-    "size_range": "1-5 mm",
-    "ecological_role": "Filter feeders, important in marine carbon cycling",
-    "distribution": "Global marine distribution"
+  "amphidinium_sp": {
+    "common_name": "Amphidinium",
+    "scientific_name": "Amphidinium spp.",
+    "description": "Marine dinoflagellate with distinctive groove pattern. Important component of marine phytoplankton communities.",
+    "habitat": "Coastal marine waters",
+    "ecological_role": "Primary producer (photosynthetic phytoplankton)",
+    "characteristics": "Two-grooved dinoflagellate, single flagellum, photosynthetic"
+  },
+  "asterionellopsis": {
+    "common_name": "Asterionellopsis",
+    "scientific_name": "Asterionellopsis spp.",
+    "description": "Chain-forming marine diatom with elongated, needle-like cells arranged in star-like colonies.",
+    "habitat": "Coastal and oceanic marine waters",
+    "ecological_role": "Primary producer, important component of marine food webs",
+    "characteristics": "Colonial diatom, radiating chain formation, siliceous cell wall"
+  },
+  "cerataulina": {
+    "common_name": "Cerataulina",
+    "scientific_name": "Cerataulina pelagica",
+    "description": "Large chain-forming marine diatom with distinctive curved cells and prominent spines.",
+    "habitat": "Coastal marine waters, often in high-nutrient areas",
+    "ecological_role": "Primary producer, forms significant blooms",
+    "characteristics": "Chain-forming, large cell size, curved morphology with spines"
   },
   "chaetoceros": {
-    "common_name": "Chaetoceros Diatom",
+    "common_name": "Chaetoceros",
     "scientific_name": "Chaetoceros spp.",
-    "description": "Chain-forming diatoms with distinctive bristle-like setae extending from the cell walls.",
-    "characteristics": [
-      "Form long chains of cells",
-      "Bristle-like setae (spines) extending from cells",
-      "Silica cell walls (frustules)",
-      "Photosynthetic with chloroplasts"
-    ],
+    "description": "Diverse genus of marine diatoms characterized by long, thin setae extending from cell corners. One of the most abundant diatom genera.",
+    "habitat": "Marine waters worldwide, particularly coastal areas",
+    "ecological_role": "Primary producer, major component of marine phytoplankton",
+    "characteristics": "Chain-forming, long setae, highly diverse morphology"
+  },
+  "chaetoceros_didymus": {
+    "common_name": "Chaetoceros didymus",
+    "scientific_name": "Chaetoceros didymus",
+    "description": "Specific species of Chaetoceros with characteristic paired cell arrangement and distinctive setae pattern.",
+    "habitat": "Coastal marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Paired cells, specific setae arrangement, chain-forming"
+  },
+  "chaetoceros_other": {
+    "common_name": "Other Chaetoceros species",
+    "scientific_name": "Chaetoceros spp. (various)",
+    "description": "Various species of Chaetoceros diatoms not specifically classified as C. didymus.",
+    "habitat": "Marine waters worldwide",
+    "ecological_role": "Primary producer",
+    "characteristics": "Diverse morphologies within Chaetoceros genus"
+  },
+  "chrysochromulina": {
+    "common_name": "Chrysochromulina",
+    "scientific_name": "Chrysochromulina spp.",
+    "description": "Golden-brown flagellated phytoplankton with two flagella of unequal length. Can form harmful algal blooms.",
+    "habitat": "Marine waters, particularly temperate regions",
+    "ecological_role": "Primary producer, can cause harmful blooms",
+    "characteristics": "Golden-brown coloration, two unequal flagella, small size"
+  },
+  "ciliate_mix": {
+    "common_name": "Mixed Ciliates",
+    "scientific_name": "Ciliata (various)",
+    "description": "Diverse group of protozoa characterized by hair-like cilia used for movement and feeding.",
     "habitat": "Marine and freshwater environments",
-    "size_range": "10-50 μm per cell",
-    "ecological_role": "Primary producers, major contributors to marine photosynthesis and oxygen production",
-    "distribution": "Cosmopolitan in marine waters"
+    "ecological_role": "Secondary consumers, microbial grazers",
+    "characteristics": "Cilia covering, complex cell structure, heterotrophic"
   },
-  "copepod_calanoid": {
-    "common_name": "Calanoid Copepod",
-    "scientific_name": "Calanoida",
-    "description": "Small marine crustaceans that are key members of zooplankton communities.",
-    "characteristics": [
-      "Elongated first antennae",
-      "Segmented body with distinct cephalothorax and abdomen",
-      "Swimming appendages (pleopods)",
-      "Large compound eyes in some species"
-    ],
-    "habitat": "Marine pelagic zones worldwide",
-    "size_range": "1-5 mm",
-    "ecological_role": "Primary consumers, critical food source for fish larvae and other marine organisms",
-    "distribution": "Global marine distribution, from surface to deep waters"
+  "corethron": {
+    "common_name": "Corethron",
+    "scientific_name": "Corethron spp.",
+    "description": "Large marine diatom with cylindrical shape and distinctive polar spines.",
+    "habitat": "Oceanic waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Cylindrical shape, prominent polar spines, large size"
   },
-  "copepod_cyclopoid": {
-    "common_name": "Cyclopoid Copepod",
-    "scientific_name": "Cyclopoida",
-    "description": "Small copepods with shorter antennae and more compact body structure than calanoids.",
-    "characteristics": [
-      "Shorter first antennae than calanoids",
-      "More compact, robust body structure",
-      "Often carry egg sacs",
-      "Strong swimming capabilities"
-    ],
+  "coscinodiscus": {
+    "common_name": "Coscinodiscus",
+    "scientific_name": "Coscinodiscus spp.",
+    "description": "Large, disc-shaped marine diatom with radially arranged pores in cell wall.",
+    "habitat": "Marine waters worldwide",
+    "ecological_role": "Primary producer",
+    "characteristics": "Disc-shaped, large size, radial pore pattern"
+  },
+  "cylindrotheca": {
+    "common_name": "Cylindrotheca",
+    "scientific_name": "Cylindrotheca spp.",
+    "description": "Elongated pennate diatom with cylindrical shape, often found in coastal waters.",
+    "habitat": "Coastal marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Cylindrical pennate shape, elongated morphology"
+  },
+  "dactfragceraul": {
+    "common_name": "Dactyliosolen Fragment/Cerataulina",
+    "scientific_name": "Dactyliosolen/Cerataulina fragments",
+    "description": "Fragmented or broken chains of Dactyliosolen or Cerataulina diatoms.",
+    "habitat": "Marine waters",
+    "ecological_role": "Decomposing phytoplankton biomass",
+    "characteristics": "Fragmented chain structures"
+  },
+  "dactfragcerataul": {
+    "common_name": "Dactyliosolen Fragment/Cerataulina",
+    "scientific_name": "Dactyliosolen/Cerataulina fragments",
+    "description": "Fragmented or broken chains of Dactyliosolen or Cerataulina diatoms.",
+    "habitat": "Marine waters",
+    "ecological_role": "Decomposing phytoplankton biomass",
+    "characteristics": "Fragmented chain structures"
+  },
+  "dactyliosolen": {
+    "common_name": "Dactyliosolen",
+    "scientific_name": "Dactyliosolen spp.",
+    "description": "Chain-forming marine diatom with finger-like projections, common in coastal waters.",
+    "habitat": "Coastal marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Chain-forming, finger-like extensions, coastal distribution"
+  },
+  "delphineis": {
+    "common_name": "Delphineis",
+    "scientific_name": "Delphineis spp.",
+    "description": "Pennate diatom with distinctive valve morphology, typically found attached to substrates.",
+    "habitat": "Marine benthic and epiphytic environments",
+    "ecological_role": "Primary producer, biofilm former",
+    "characteristics": "Pennate symmetry, substrate attachment, distinctive valve pattern"
+  },
+  "dictyocha": {
+    "common_name": "Dictyocha",
+    "scientific_name": "Dictyocha fibula",
+    "description": "Silicoflagellate with distinctive skeletal framework, important marine phytoplankter.",
+    "habitat": "Marine waters worldwide",
+    "ecological_role": "Primary producer",
+    "characteristics": "Siliceous skeleton, flagellate, geometric framework"
+  },
+  "dinobryon": {
+    "common_name": "Dinobryon",
+    "scientific_name": "Dinobryon spp.",
+    "description": "Colonial chrysophyte forming tree-like structures, common in freshwater but some marine species exist.",
+    "habitat": "Primarily freshwater, some marine species",
+    "ecological_role": "Primary producer",
+    "characteristics": "Colonial, tree-like structure, lorica-bearing"
+  },
+  "dinophysis": {
+    "common_name": "Dinophysis",
+    "scientific_name": "Dinophysis spp.",
+    "description": "Marine dinoflagellate known for producing toxins causing diarrhetic shellfish poisoning.",
+    "habitat": "Marine waters worldwide",
+    "ecological_role": "Primary producer, toxic bloom former",
+    "characteristics": "Compressed cell shape, toxin production, distinctive groove pattern"
+  },
+  "ditylum": {
+    "common_name": "Ditylum",
+    "scientific_name": "Ditylum brightwellii",
+    "description": "Large marine diatom with distinctive horn-like projections, important in temperate waters.",
+    "habitat": "Temperate marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Large size, horn-like projections, thick cell wall"
+  },
+  "ditylum_parasite": {
+    "common_name": "Parasitized Ditylum",
+    "scientific_name": "Ditylum brightwellii (with parasites)",
+    "description": "Ditylum diatoms infected with various parasites, often affecting cell morphology and health.",
+    "habitat": "Marine waters",
+    "ecological_role": "Host-parasite interaction",
+    "characteristics": "Modified morphology due to parasitic infection"
+  },
+  "emiliania_huxleyi": {
+    "common_name": "Emiliania huxleyi",
+    "scientific_name": "Emiliania huxleyi",
+    "description": "Coccolithophore with calcite plates, one of the most abundant phytoplankton species globally.",
+    "habitat": "Marine waters worldwide",
+    "ecological_role": "Primary producer, major component of marine carbon cycle",
+    "characteristics": "Calcite coccoliths, spherical shape, globally distributed"
+  },
+  "ephemera": {
+    "common_name": "Ephemeral plankton",
+    "scientific_name": "Various temporary forms",
+    "description": "Temporary or short-lived planktonic organisms or structures.",
+    "habitat": "Various marine environments",
+    "ecological_role": "Variable",
+    "characteristics": "Temporary nature, diverse origins"
+  },
+  "eucampia": {
+    "common_name": "Eucampia",
+    "scientific_name": "Eucampia spp.",
+    "description": "Chain-forming marine diatom with distinctive curved shape and linking structures.",
+    "habitat": "Marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Chain-forming, curved cells, linking structures"
+  },
+  "euglena": {
+    "common_name": "Euglena",
+    "scientific_name": "Euglena spp.",
+    "description": "Flagellated protist capable of both photosynthesis and heterotrophy, more common in freshwater.",
+    "habitat": "Primarily freshwater, some marine species",
+    "ecological_role": "Mixotrophic (both producer and consumer)",
+    "characteristics": "Single flagellum, flexible pellicle, mixotrophic nutrition"
+  },
+  "g_delicatula_external_parasite": {
+    "common_name": "Guinardia delicatula with external parasite",
+    "scientific_name": "Guinardia delicatula (with external parasites)",
+    "description": "Guinardia delicatula diatom with external parasitic organisms attached.",
+    "habitat": "Marine waters",
+    "ecological_role": "Host-parasite interaction",
+    "characteristics": "External parasitic attachments on diatom cells"
+  },
+  "g_delicatula_parasite": {
+    "common_name": "Guinardia delicatula with internal parasite",
+    "scientific_name": "Guinardia delicatula (with internal parasites)",
+    "description": "Guinardia delicatula diatom with internal parasitic infections.",
+    "habitat": "Marine waters",
+    "ecological_role": "Host-parasite interaction",
+    "characteristics": "Internal parasitic infections affecting cell structure"
+  },
+  "guinardia_delicatula": {
+    "common_name": "Guinardia delicatula",
+    "scientific_name": "Guinardia delicatula",
+    "description": "Chain-forming marine diatom, very common in coastal waters and important food source.",
+    "habitat": "Coastal marine waters worldwide",
+    "ecological_role": "Primary producer, major food web component",
+    "characteristics": "Chain-forming, cylindrical cells, very abundant"
+  },
+  "guinardia_flaccida": {
+    "common_name": "Guinardia flaccida",
+    "scientific_name": "Guinardia flaccida",
+    "description": "Large chain-forming marine diatom with more flexible chain structure than G. delicatula.",
+    "habitat": "Marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Large size, flexible chains, cylindrical cells"
+  },
+  "guinardia_striata": {
+    "common_name": "Guinardia striata",
+    "scientific_name": "Guinardia striata",
+    "description": "Marine diatom with distinctive striations on the cell wall.",
+    "habitat": "Marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Striated cell wall pattern, chain-forming"
+  },
+  "gyrodinium": {
+    "common_name": "Gyrodinium",
+    "scientific_name": "Gyrodinium spp.",
+    "description": "Unarmored dinoflagellate with distinctive spiral swimming pattern, some species form harmful blooms.",
+    "habitat": "Marine waters worldwide",
+    "ecological_role": "Primary producer, some species cause harmful blooms",
+    "characteristics": "Unarmored, spiral swimming, two flagella"
+  },
+  "heterocapsa_triquetra": {
+    "common_name": "Heterocapsa triquetra",
+    "scientific_name": "Heterocapsa triquetra",
+    "description": "Small marine dinoflagellate with triangular shape when viewed from apex.",
+    "habitat": "Marine coastal waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Triangular apical view, small size, armored dinoflagellate"
+  },
+  "katodinium_or_torodinium": {
+    "common_name": "Katodinium/Torodinium",
+    "scientific_name": "Katodinium/Torodinium spp.",
+    "description": "Small heterotrophic dinoflagellates, important microbial grazers in marine ecosystems.",
+    "habitat": "Marine waters",
+    "ecological_role": "Secondary consumer, microbial grazer",
+    "characteristics": "Small size, heterotrophic, distinctive dinoflagellate morphology"
+  },
+  "laboea_strobila": {
+    "common_name": "Laboea strobila",
+    "scientific_name": "Laboea strobila",
+    "description": "Mixotrophic ciliate that retains chloroplasts from prey, combining grazing and photosynthesis.",
+    "habitat": "Marine waters",
+    "ecological_role": "Mixotroph (consumer and producer)",
+    "characteristics": "Ciliate with retained chloroplasts, mixotrophic nutrition"
+  },
+  "leptocylindrus": {
+    "common_name": "Leptocylindrus",
+    "scientific_name": "Leptocylindrus spp.",
+    "description": "Thin, elongated chain-forming marine diatom, often very abundant in coastal waters.",
+    "habitat": "Coastal marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Very thin cylindrical shape, chain-forming, high length to width ratio"
+  },
+  "leptocylindrus_mediterraneus": {
+    "common_name": "Mediterranean Leptocylindrus",
+    "scientific_name": "Leptocylindrus mediterraneus",
+    "description": "Species of Leptocylindrus originally described from Mediterranean Sea.",
+    "habitat": "Mediterranean and other marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Thin cylindrical morphology, specific to Mediterranean region"
+  },
+  "licmophora": {
+    "common_name": "Licmophora",
+    "scientific_name": "Licmophora spp.",
+    "description": "Fan-shaped colonial pennate diatom, typically attached to substrates.",
+    "habitat": "Marine benthic and epiphytic environments",
+    "ecological_role": "Primary producer, biofilm component",
+    "characteristics": "Fan-shaped colonies, pennate diatom, substrate attachment"
+  },
+  "mesodinium_sp": {
+    "common_name": "Mesodinium",
+    "scientific_name": "Mesodinium spp.",
+    "description": "Ciliate that can retain chloroplasts from cryptophyte prey, forming red tide blooms.",
+    "habitat": "Marine and estuarine waters",
+    "ecological_role": "Mixotroph, can form blooms",
+    "characteristics": "Ciliate with acquired photosynthesis, can cause red coloration"
+  },
+  "paralia": {
+    "common_name": "Paralia",
+    "scientific_name": "Paralia sulcata",
+    "description": "Drum-shaped marine diatom often found in chains, common in coastal areas.",
+    "habitat": "Coastal marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Drum-shaped cells, chain-forming, robust structure"
+  },
+  "parvicorbicula_socialis": {
+    "common_name": "Parvicorbicula socialis",
+    "scientific_name": "Parvicorbicula socialis",
+    "description": "Small colonial marine diatom forming social aggregations.",
+    "habitat": "Marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Small size, colonial behavior, social aggregations"
+  },
+  "phaeocystis": {
+    "common_name": "Phaeocystis",
+    "scientific_name": "Phaeocystis spp.",
+    "description": "Colonial haptophyte forming large mucilaginous colonies, important in polar and temperate waters.",
+    "habitat": "Polar and temperate marine waters",
+    "ecological_role": "Primary producer, forms large blooms",
+    "characteristics": "Colonial mucilaginous structure, flagellated cells, bloom-forming"
+  },
+  "pleuronema_sp": {
+    "common_name": "Pleuronema",
+    "scientific_name": "Pleuronema spp.",
+    "description": "Free-swimming ciliate with distinctive undulating membrane, heterotrophic grazer.",
     "habitat": "Marine and freshwater environments",
-    "size_range": "0.5-2 mm",
-    "ecological_role": "Predatory and omnivorous feeding, important in energy transfer",
-    "distribution": "Worldwide in aquatic environments"
+    "ecological_role": "Secondary consumer, bacterial grazer",
+    "characteristics": "Undulating membrane, free-swimming ciliate, heterotrophic"
   },
-  "copepod_other": {
-    "common_name": "Other Copepods",
-    "scientific_name": "Copepoda (various)",
-    "description": "Diverse group of small crustaceans including harpacticoids and other families.",
-    "characteristics": [
-      "Highly diverse morphology",
-      "Segmented crustacean body plan",
-      "Various feeding strategies",
-      "Important component of meiofauna and plankton"
-    ],
-    "habitat": "All aquatic environments",
-    "size_range": "0.2-10 mm",
-    "ecological_role": "Diverse ecological roles from detritivores to predators",
-    "distribution": "Ubiquitous in aquatic ecosystems"
+  "pleurosigma": {
+    "common_name": "Pleurosigma",
+    "scientific_name": "Pleurosigma spp.",
+    "description": "S-shaped pennate diatom with distinctive sigmoid morphology.",
+    "habitat": "Marine benthic and planktonic environments",
+    "ecological_role": "Primary producer",
+    "characteristics": "S-shaped (sigmoid) morphology, pennate diatom"
   },
-  "diatom_chain": {
-    "common_name": "Chain-forming Diatom",
-    "scientific_name": "Various chain-forming genera",
-    "description": "Diatoms that form chains through cell-to-cell connections after division.",
-    "characteristics": [
-      "Cells connected in linear chains",
-      "Glass-like silica cell walls",
-      "Photosynthetic with golden-brown chloroplasts",
-      "Various chain morphologies"
-    ],
+  "prorocentrum": {
+    "common_name": "Prorocentrum",
+    "scientific_name": "Prorocentrum spp.",
+    "description": "Heart-shaped dinoflagellate, some species produce toxins and form harmful blooms.",
+    "habitat": "Marine waters worldwide",
+    "ecological_role": "Primary producer, some species form toxic blooms",
+    "characteristics": "Heart-shaped, two-plate dinoflagellate, some toxic species"
+  },
+  "proterythropsis_sp": {
+    "common_name": "Proterythropsis",
+    "scientific_name": "Proterythropsis spp.",
+    "description": "Small flagellated protist, part of the microbial food web.",
+    "habitat": "Marine waters",
+    "ecological_role": "Microbial grazer",
+    "characteristics": "Small flagellated protist, heterotrophic"
+  },
+  "pseudochattonella_farcimen": {
+    "common_name": "Pseudochattonella farcimen",
+    "scientific_name": "Pseudochattonella farcimen",
+    "description": "Raphidophyte flagellate capable of forming harmful algal blooms.",
+    "habitat": "Marine waters",
+    "ecological_role": "Primary producer, harmful bloom species",
+    "characteristics": "Flagellated, raphidophyte, bloom-forming potential"
+  },
+  "pseudonitzschia": {
+    "common_name": "Pseudo-nitzschia",
+    "scientific_name": "Pseudo-nitzschia spp.",
+    "description": "Needle-shaped pennate diatom, some species produce domoic acid toxin.",
+    "habitat": "Marine waters worldwide",
+    "ecological_role": "Primary producer, some species produce neurotoxins",
+    "characteristics": "Needle-shaped, stepped chains, some toxic species"
+  },
+  "pyramimonas_longicauda": {
+    "common_name": "Long-tailed Pyramimonas",
+    "scientific_name": "Pyramimonas longicauda",
+    "description": "Quadriflagellate green algae with distinctive long tail-like projection.",
+    "habitat": "Marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Four flagella, pyramid-shaped, long tail projection"
+  },
+  "rhizosolenia": {
+    "common_name": "Rhizosolenia",
+    "scientific_name": "Rhizosolenia spp.",
+    "description": "Large, needle-shaped marine diatom, important component of oceanic phytoplankton.",
+    "habitat": "Oceanic marine waters",
+    "ecological_role": "Primary producer, major oceanic phytoplankter",
+    "characteristics": "Large needle-shaped morphology, oceanic distribution"
+  },
+  "skeletonema": {
+    "common_name": "Skeletonema",
+    "scientific_name": "Skeletonema spp.",
+    "description": "Small chain-forming marine diatom connected by linking threads, very abundant cosmopolitan species.",
+    "habitat": "Marine waters worldwide",
+    "ecological_role": "Primary producer, cosmopolitan distribution",
+    "characteristics": "Small cylindrical cells, linking threads, chain-forming"
+  },
+  "strobilidium_morphotype1": {
+    "common_name": "Strobilidium type 1",
+    "scientific_name": "Strobilidium spp. (morphotype 1)",
+    "description": "Oligotrich ciliate with distinctive morphology, important marine micrograzer.",
+    "habitat": "Marine waters",
+    "ecological_role": "Secondary consumer, micrograzer",
+    "characteristics": "Oligotrich ciliate, specific morphological features"
+  },
+  "strombidium_morphotype1": {
+    "common_name": "Strombidium type 1",
+    "scientific_name": "Strombidium spp. (morphotype 1)",
+    "description": "Oligotrich ciliate, important component of marine microbial food webs.",
+    "habitat": "Marine waters",
+    "ecological_role": "Secondary consumer, microbial grazer",
+    "characteristics": "Conical shape, prominent oral cilia, heterotrophic"
+  },
+  "strombidium_morphotype2": {
+    "common_name": "Strombidium type 2",
+    "scientific_name": "Strombidium spp. (morphotype 2)",
+    "description": "Alternative morphological form of Strombidium ciliate.",
+    "habitat": "Marine waters",
+    "ecological_role": "Secondary consumer, microbial grazer",
+    "characteristics": "Distinct morphological features from type 1"
+  },
+  "strombidium_oculatum": {
+    "common_name": "Strombidium oculatum",
+    "scientific_name": "Strombidium oculatum",
+    "description": "Specific species of Strombidium ciliate with eye-like features.",
+    "habitat": "Marine waters",
+    "ecological_role": "Secondary consumer, microbial grazer",
+    "characteristics": "Eye-like morphological features, ciliate structure"
+  },
+  "thalassionema": {
+    "common_name": "Thalassionema",
+    "scientific_name": "Thalassionema spp.",
+    "description": "Needle-shaped pennate diatom often found in zig-zag chains.",
+    "habitat": "Marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Needle-shaped, zig-zag chain formation, pennate diatom"
+  },
+  "thalassiosira": {
+    "common_name": "Thalassiosira",
+    "scientific_name": "Thalassiosira spp.",
+    "description": "Centric diatom with radial symmetry, one of the most diverse marine diatom genera.",
+    "habitat": "Marine waters worldwide",
+    "ecological_role": "Primary producer, highly diverse genus",
+    "characteristics": "Centric symmetry, diverse morphologies, marine distribution"
+  },
+  "thalassiosira_dirty": {
+    "common_name": "Thalassiosira (with debris)",
+    "scientific_name": "Thalassiosira spp. (with attached debris)",
+    "description": "Thalassiosira diatoms with attached organic or inorganic debris particles.",
+    "habitat": "Marine waters",
+    "ecological_role": "Primary producer with surface modifications",
+    "characteristics": "Debris attachment, modified surface properties"
+  },
+  "tintinnid": {
+    "common_name": "Tintinnids",
+    "scientific_name": "Tintinnida (various)",
+    "description": "Loricate ciliates with distinctive cone-shaped shells, important marine microzooplankton.",
+    "habitat": "Marine waters worldwide",
+    "ecological_role": "Secondary consumer, selective grazers",
+    "characteristics": "Cone-shaped lorica, ciliated, heterotrophic"
+  },
+  "tontonia_gracillima": {
+    "common_name": "Tontonia gracillima",
+    "scientific_name": "Tontonia gracillima",
+    "description": "Oligotrich ciliate with gracile morphology, marine micrograzer.",
+    "habitat": "Marine waters",
+    "ecological_role": "Secondary consumer, micrograzer",
+    "characteristics": "Gracile morphology, oligotrich ciliate structure"
+  },
+  "bead": {
+    "common_name": "Artificial beads",
+    "scientific_name": "Non-biological particles",
+    "description": "Artificial spherical particles used for calibration or contamination in samples.",
+    "habitat": "Laboratory/artificial",
+    "ecological_role": "Non-biological",
+    "characteristics": "Spherical, uniform size, artificial origin"
+  },
+  "diatom_flagellate": {
+    "common_name": "Mixed diatom-flagellate",
+    "scientific_name": "Mixed phytoplankton",
+    "description": "Mixed assemblage or association of diatoms and flagellates in same field of view.",
+    "habitat": "Marine waters",
+    "ecological_role": "Mixed primary producers",
+    "characteristics": "Combination of diatom and flagellate morphologies"
+  },
+  "dino30": {
+    "common_name": "30μm dinoflagellate",
+    "scientific_name": "Unidentified dinoflagellate (~30μm)",
+    "description": "Unidentified dinoflagellate species approximately 30 micrometers in size.",
+    "habitat": "Marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "30μm size, dinoflagellate morphology, unidentified"
+  },
+  "flagellate_sp3": {
+    "common_name": "Flagellate species 3",
+    "scientific_name": "Unidentified flagellate sp. 3",
+    "description": "Unidentified flagellated protist, morphological variant 3.",
+    "habitat": "Marine waters",
+    "ecological_role": "Variable (producer or consumer)",
+    "characteristics": "Flagellated, specific morphological features"
+  },
+  "other_interaction": {
+    "common_name": "Species interactions",
+    "scientific_name": "Various interacting organisms",
+    "description": "Images showing interactions between different plankton species or with particles.",
+    "habitat": "Marine waters",
+    "ecological_role": "Ecological interactions",
+    "characteristics": "Multi-species interactions, complex associations"
+  },
+  "pennate": {
+    "common_name": "Pennate diatoms",
+    "scientific_name": "Pennate diatoms (various)",
+    "description": "General category of pennate (bilaterally symmetric) diatoms not further classified.",
     "habitat": "Marine and freshwater environments",
-    "size_range": "10-100 μm per cell",
-    "ecological_role": "Primary producers, form base of aquatic food webs",
-    "distribution": "Global distribution in aquatic environments"
+    "ecological_role": "Primary producer",
+    "characteristics": "Bilateral symmetry, elongated shape, pennate structure"
   },
-  "echinoderm_larva": {
-    "common_name": "Echinoderm Larva",
-    "scientific_name": "Echinodermata (larval stage)",
-    "description": "Planktonic larvae of sea stars, sea urchins, and other echinoderms.",
-    "characteristics": [
-      "Bilateral symmetry in larval stage",
-      "Ciliated bands for locomotion and feeding",
-      "Transparent body with visible internal structures",
-      "Will develop into radially symmetric adult"
-    ],
-    "habitat": "Marine pelagic environments",
-    "size_range": "0.5-2 mm",
-    "ecological_role": "Planktonic development stage, part of marine life cycles",
-    "distribution": "Marine environments worldwide"
+  "pennate_morphotype1": {
+    "common_name": "Pennate diatom type 1",
+    "scientific_name": "Pennate diatom morphotype 1",
+    "description": "Specific morphological type of pennate diatom with distinctive features.",
+    "habitat": "Marine waters",
+    "ecological_role": "Primary producer",
+    "characteristics": "Specific pennate morphology, distinctive features"
   },
-  "ephyra": {
-    "common_name": "Ephyra (Jellyfish Larva)",
-    "scientific_name": "Scyphozoa (ephyra stage)",
-    "description": "Young stage of scyphozoan jellyfish with distinctive eight-lobed appearance.",
-    "characteristics": [
-      "Eight marginal lobes",
-      "Bell-shaped body",
-      "Simple nervous system",
-      "Beginning of medusa development"
-    ],
-    "habitat": "Marine pelagic waters",
-    "size_range": "2-10 mm",
-    "ecological_role": "Developmental stage in jellyfish life cycle",
-    "distribution": "Marine waters where adult jellyfish are found"
+  "pennates_on_diatoms": {
+    "common_name": "Epiphytic pennate diatoms",
+    "scientific_name": "Epiphytic pennate diatoms",
+    "description": "Small pennate diatoms growing attached to larger diatom cells.",
+    "habitat": "Marine waters",
+    "ecological_role": "Epiphytic primary producer",
+    "characteristics": "Small size, attached to host diatoms, epiphytic lifestyle"
   },
-  "fish_larvae": {
-    "common_name": "Fish Larvae",
-    "scientific_name": "Various fish species (larval stage)",
-    "description": "Early developmental stages of marine fish, part of the zooplankton community.",
-    "characteristics": [
-      "Elongated body with developing fins",
-      "Large yolk sac in early stages",
-      "Developing eyes and mouth",
-      "Swimming behavior varies by species"
-    ],
-    "habitat": "Marine pelagic waters",
-    "size_range": "2-20 mm",
-    "ecological_role": "Recruitment stage for fish populations, prey for other organisms",
-    "distribution": "Marine waters worldwide"
-  },
-  "gastropod_larva": {
-    "common_name": "Gastropod Larva",
-    "scientific_name": "Gastropoda (larval stage)",
-    "description": "Planktonic larvae of snails and other gastropod mollusks.",
-    "characteristics": [
-      "Ciliated velum for swimming and feeding",
-      "Developing shell in some species",
-      "Torsion process during development",
-      "Metamorphosis to adult form"
-    ],
-    "habitat": "Marine and some freshwater environments",
-    "size_range": "0.2-2 mm",
-    "ecological_role": "Dispersal stage for gastropod populations",
-    "distribution": "Aquatic environments globally"
-  },
-  "hydromedusae_h15": {
-    "common_name": "Hydromedusa H15",
-    "scientific_name": "Hydrozoa (medusa stage)",
-    "description": "Small jellyfish representing the free-swimming stage of hydrozoan cnidarians.",
-    "characteristics": [
-      "Bell-shaped body (umbrella)",
-      "Marginal tentacles with nematocysts",
-      "Simple digestive cavity",
-      "Alternation of generations lifecycle"
-    ],
-    "habitat": "Marine pelagic waters",
-    "size_range": "1-20 mm",
-    "ecological_role": "Predators on small plankton, part of cnidarian life cycles",
-    "distribution": "Marine waters worldwide"
-  },
-  "nauplius": {
-    "common_name": "Nauplius Larva",
-    "scientific_name": "Crustacea (nauplius stage)",
-    "description": "Early larval stage of crustaceans including copepods and cirripeds.",
-    "characteristics": [
-      "Three pairs of appendages",
-      "Single median eye (nauplius eye)",
-      "Unsegmented or poorly segmented body",
-      "Swimming using appendage movements"
-    ],
-    "habitat": "Marine and freshwater environments",
-    "size_range": "0.1-1 mm",
-    "ecological_role": "Early development stage of important crustacean groups",
-    "distribution": "Wherever adult crustaceans are found"
-  },
-  "protist_other": {
-    "common_name": "Other Protists",
-    "scientific_name": "Protista (various)",
-    "description": "Diverse group of single-celled eukaryotic organisms in marine plankton.",
-    "characteristics": [
-      "Single-celled eukaryotic organisms",
-      "Diverse morphologies and lifestyles",
-      "Various modes of nutrition",
-      "Important microbial component"
-    ],
-    "habitat": "All aquatic environments",
-    "size_range": "1-500 μm",
-    "ecological_role": "Primary producers, consumers, and decomposers in microbial food webs",
-    "distribution": "Ubiquitous in aquatic ecosystems"
-  },
-  "tornaria_acorn_worm_larva": {
-    "common_name": "Tornaria (Acorn Worm Larva)",
-    "scientific_name": "Hemichordata (tornaria stage)",
-    "description": "Planktonic larva of acorn worms, showing deuterostome characteristics.",
-    "characteristics": [
-      "Ciliated bands for locomotion",
-      "Transparent body",
-      "Deuterostome development pattern",
-      "Bilateral symmetry"
-    ],
-    "habitat": "Marine pelagic waters",
-    "size_range": "0.5-2 mm",
-    "ecological_role": "Developmental stage linking to adult benthic forms",
-    "distribution": "Marine environments where adult acorn worms occur"
+  "spore": {
+    "common_name": "Spores",
+    "scientific_name": "Various spore types",
+    "description": "Reproductive spores from various marine organisms, including algae and fungi.",
+    "habitat": "Marine waters",
+    "ecological_role": "Reproductive propagules",
+    "characteristics": "Spherical to oval, thick-walled, resistant structures"
   }
 }
