@@ -536,15 +536,15 @@ def api_predict():
             file = request.files['file']
             image = Image.open(file.stream)
 
-        # Check for URL (only if request has JSON data)
-        elif request.json and 'url' in request.json:
+        # Check for URL (only if request has JSON data and no file was uploaded)
+        elif request.is_json and request.json and 'url' in request.json:
             url = request.json['url']
             image, error_msg = load_image_from_url(url)
             if image is None:
                 return jsonify({'error': error_msg or 'Could not load image from URL'}), 400
 
-        # Check for base64 image (only if request has JSON data)
-        elif request.json and 'image_data' in request.json:
+        # Check for base64 image (only if request has JSON data and no file was uploaded)
+        elif request.is_json and request.json and 'image_data' in request.json:
             image_data = request.json['image_data']
             if image_data.startswith('data:image'):
                 image_data = image_data.split(',')[1]
