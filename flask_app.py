@@ -37,11 +37,16 @@ from werkzeug.utils import secure_filename
 
 # Import the custom CNN model
 try:
-    from models.cnn_model import PlanktonCNN
+    from src.models.cnn_model import PlanktonCNN
     model_available = True
 except ImportError:
-    model_available = False
-    print("Warning: PlanktonCNN not available, using fallback model")
+    try:
+        # Fallback to old location
+        from models.cnn_model import PlanktonCNN
+        model_available = True
+    except ImportError:
+        model_available = False
+        print("Warning: PlanktonCNN not available, using fallback model")
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB max file size
@@ -253,6 +258,10 @@ def normalize_microscopy_image(image):
 
 def analyze_image_quality(image):
     """Analyze image quality and suggest preprocessing adjustments."""
+    # Defensive check: image must not be None
+    if image is None:
+        return {'quality': 'unknown', 'score': 0}
+
     img_array = np.array(image)
 
     # Calculate image statistics
@@ -322,6 +331,10 @@ def predict_image_with_tta(image, top_k=5):
 
     if model is None or idx_to_class is None:
         return None
+
+    # Defensive check: image must not be None
+    if image is None:
+        raise ValueError("Image cannot be None")
 
     try:
         print("Applying advanced image normalization for uniformity...")
@@ -517,34 +530,34 @@ def api_predict():
         image = None
 
         # Check for uploaded file
-        if 'file' in request.files:
+        if 'file' in request.files and request.files['file'].filename != '':
             file = request.files['file']
-            if file.filename != '':
-                image = Image.open(file.stream)
+            image = Image.open(file.stream)
 
-        # Check for URL
-        elif 'url' in request.json:
+        # Check for URL (only if request has JSON data)
+        elif request.json and 'url' in request.json:
             url = request.json['url']
             image, error_msg = load_image_from_url(url)
             if image is None:
                 return jsonify({'error': error_msg or 'Could not load image from URL'}), 400
 
-        # Check for base64 image
-        elif 'image_data' in request.json:
+        # Check for base64 image (only if request has JSON data)
+        elif request.json and 'image_data' in request.json:
             image_data = request.json['image_data']
             if image_data.startswith('data:image'):
                 image_data = image_data.split(',')[1]
             image_bytes = base64.b64decode(image_data)
             image = Image.open(BytesIO(image_bytes))
 
-        else:
-            return jsonify({'error': 'No image provided'}), 400
+        # Validate image was loaded
+        if image is None:
+            return jsonify({'error': 'No valid image provided. Please upload a file, provide a URL, or send base64 image data.'}), 400
 
         # Make prediction with Test-Time Augmentation for better web image handling
         predictions = predict_image_with_tta(image)
 
         if predictions is None:
-            return jsonify({'error': 'Failed to make prediction'}), 500
+            return jsonify({'error': 'Failed to make prediction. Model may not be loaded correctly.'}), 500
 
         return jsonify({
             'success': True,
@@ -554,7 +567,9 @@ def api_predict():
 
     except Exception as e:
         print(f"Error in prediction API: {e}")
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Prediction failed: {str(e)}'}), 500
 
 @app.route('/api/model-info')
 def model_info():
