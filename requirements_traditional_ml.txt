@@ -1,0 +1,32 @@
+# Traditional ML Dependencies (GPU-Accelerated)
+# =============================================
+
+# Core ML libraries (CPU fallback)
+numpy>=1.21.0
+scikit-learn>=1.0.0
+scikit-image>=0.19.0
+Pillow>=9.0.0
+opencv-python>=4.5.0
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# Optional for progress tracking
+tqdm>=4.62.0
+
+# =============================================
+# GPU Acceleration (NVIDIA GPUs - HIGHLY RECOMMENDED)
+# =============================================
+# For GPU training, install cuML from RAPIDS:
+#
+# Option 1: Using conda (RECOMMENDED)
+# conda create -n rapids-env -c rapidsai -c conda-forge -c nvidia \
+#     cuml=24.04 python=3.10 cudatoolkit=12.0
+#
+# Option 2: Using pip (may have compatibility issues)
+# pip install cuml-cu12
+#
+# Verify installation:
+# python -c "import cuml; print('GPU libraries loaded!')"
+#
+# If cuML is not installed, the script will fallback to CPU (scikit-learn)
+

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html id="root" class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>CNN vs Traditional ML | PlanktonAI</title>
+
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon.png') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='uniform-colors.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>tailwind.config = { darkMode:"class", theme:{ extend:{ fontFamily:{'sans':['Inter','system-ui','sans-serif'],'display':['Outfit','Inter','sans-serif']} } } }</script>
+    <script>(function(){var t=localStorage.getItem('theme');if(t==='light')document.documentElement.classList.remove('dark');else document.documentElement.classList.add('dark');})();</script>
+
+    <style>
+        .upload-area {border:2px dashed var(--border-main);background:var(--bg-elevated);border-radius:1.25rem;transition:all .35s;cursor:pointer;}
+        .upload-area:hover,.upload-area.dragover {border-color:var(--bio-400);background:rgba(13,148,136,.06);box-shadow:0 0 30px rgba(13,148,136,.1);}
+        .image-preview {max-width:100%;max-height:400px;object-fit:contain;border-radius:.75rem;box-shadow:0 4px 15px rgba(0,0,0,.1);}
+    </style>
+</head>
+
+<body class="font-sans">
+    <!-- Header -->
+    <header class="sticky top-0 z-50" style="background:var(--bg-card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border-main);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 gradient-ocean rounded-xl flex items-center justify-center shadow-lg">
+                        <span class="material-symbols-outlined text-white text-xl">compare_arrows</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-display font-bold text-gradient">Model Comparison</h1>
+                        <p class="text-xs text-muted">CNN vs Traditional ML</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="/" class="btn-ocean text-xs"><span class="material-symbols-outlined text-sm mr-1">arrow_back</span>Main</a>
+                    <button id="theme-toggle" class="theme-btn" title="Toggle dark/light mode">
+                        <span class="material-symbols-outlined text-lg" id="theme-icon">dark_mode</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Accuracy Banner -->
+        <div class="gradient-bg rounded-2xl shadow-xl p-8 mb-8 text-white text-center prediction-glow relative overflow-hidden">
+            <div class="relative z-10">
+                <h2 class="font-display font-bold text-2xl mb-4">Validation Results: CNN Dominates!</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                    <div><div class="text-4xl font-display font-bold">89.51%</div><div class="text-sm opacity-80">CNN Accuracy</div></div>
+                    <div><div class="text-3xl font-display font-bold" style="color:#fbbf24;">+34.46%</div><div class="text-sm opacity-80">CNN Advantage</div></div>
+                    <div><div class="text-4xl font-display font-bold opacity-60">55.05%</div><div class="text-sm opacity-80">Traditional ML</div></div>
+                </div>
+                <p class="mt-4 text-sm opacity-80">Tested on 13,000+ validation images across 67 plankton species</p>
+            </div>
+        </div>
+
+        <!-- Pro Tip -->
+        <div class="glass-card p-5 mb-8">
+            <div class="flex items-start gap-4">
+                <div class="stat-ring flex-shrink-0"><span class="material-symbols-outlined text-lg" style="color:var(--bio-400);">lightbulb</span></div>
+                <div>
+                    <h3 class="font-display font-semibold text-primary mb-1">💡 Pro Tip: Test with Challenging Images</h3>
+                    <p class="text-secondary text-sm mb-3">CNN truly shines with difficult cases:</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                        <div class="glass-elevated p-2.5 rounded-lg text-center font-medium text-secondary">🌀 Blurry</div>
+                        <div class="glass-elevated p-2.5 rounded-lg text-center font-medium text-secondary">🔄 Rotated</div>
+                        <div class="glass-elevated p-2.5 rounded-lg text-center font-medium text-secondary">🌓 Low Light</div>
+                        <div class="glass-elevated p-2.5 rounded-lg text-center font-medium text-secondary">🔍 Unusual Angles</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload -->
+        <div class="glass-card p-6 mb-8">
+            <h2 class="font-display font-semibold text-primary text-lg mb-4">Upload Image for Comparison</h2>
+            <div id="uploadArea" class="upload-area p-10 text-center mb-4">
+                <div class="animate-float" style="animation-duration:4s;">
+                    <span class="material-symbols-outlined text-5xl block mb-3" style="color:var(--bio-400);opacity:.5;">cloud_upload</span>
+                </div>
+                <p class="font-display font-medium text-primary text-lg mb-1">Drop your image here</p>
+                <p class="text-sm text-muted">JPG, PNG, WEBP up to 50MB</p>
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
+            </div>
+
+            <div id="imagePreviewSection" class="hidden mb-6">
+                <div class="glass-elevated p-5 rounded-xl">
+                    <h3 class="font-display font-semibold text-primary mb-3">Image Preview</h3>
+                    <div class="text-center">
+                        <img id="imagePreview" class="image-preview mx-auto mb-3" alt="Uploaded plankton image">
+                        <div class="text-xs text-secondary space-y-1">
+                            <p><span class="font-medium text-primary">File:</span> <span id="fileName"></span></p>
+                            <p><span class="font-medium text-primary">Size:</span> <span id="fileSize"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="analyzeButtonSection" class="hidden text-center">
+                <button id="analyzeButton" class="btn-glow text-base px-8 py-4">
+                    <span class="material-symbols-outlined mr-2">compare_arrows</span>Analyze with Both Models
+                </button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultsSection" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- CNN -->
+                <div class="glass-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-display font-semibold text-primary">CNN (EfficientNet-B2)</h3>
+                        <span class="badge" style="background:rgba(13,148,136,.15);color:var(--bio-400);">89.51% Accuracy</span>
+                    </div>
+                    <div id="cnnResults" class="space-y-3"></div>
+                    <div class="mt-4 text-xs text-secondary">Inference: <span id="cnnTime" class="font-semibold text-primary">-</span>ms</div>
+                </div>
+                <!-- Traditional -->
+                <div class="glass-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-display font-semibold text-primary">Traditional ML (SVM)</h3>
+                        <span class="badge" style="background:rgba(225,29,72,.12);color:var(--coral-500);">55.05% Accuracy</span>
+                    </div>
+                    <div id="traditionalResults" class="space-y-3"></div>
+                    <div class="mt-4 text-xs text-secondary">Inference: <span id="traditionalTime" class="font-semibold text-primary">-</span>ms</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="glass-card p-6">
+                <h3 class="font-display font-semibold text-primary mb-4">Performance Comparison</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-elevated rounded-xl p-4"><canvas id="accuracyChart" width="400" height="300"></canvas></div>
+                    <div class="glass-elevated rounded-xl p-4"><canvas id="speedChart" width="400" height="300"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loadingSection" class="hidden">
+            <div class="glass-card p-10 text-center">
+                <div class="inline-block mb-5 relative">
+                    <div class="w-14 h-14 rounded-full border-2 border-transparent animate-spin" style="border-top-color:var(--bio-400);border-right-color:var(--ocean-400);"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-lg" style="color:var(--bio-400);">compare_arrows</span>
+                    </div>
+                </div>
+                <p class="font-display font-semibold text-primary text-lg">Comparing Models…</p>
+                <p class="text-sm text-secondary">Running predictions on both CNN and Traditional ML</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let uploadedFile = null;
+        let accuracyChart = null;
+        let speedChart = null;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const imagePreviewSection = document.getElementById('imagePreviewSection');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const analyzeButtonSection = document.getElementById('analyzeButtonSection');
+        const analyzeButton = document.getElementById('analyzeButton');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', e=>{ e.preventDefault(); uploadArea.classList.add('dragover'); });
+        uploadArea.addEventListener('dragleave', e=>{ e.preventDefault(); uploadArea.classList.remove('dragover'); });
+        uploadArea.addEventListener('drop', e=>{ e.preventDefault(); uploadArea.classList.remove('dragover'); if(e.dataTransfer.files.length>0) processFile(e.dataTransfer.files[0]); });
+        fileInput.addEventListener('change', e=>{ if(e.target.files[0]) processFile(e.target.files[0]); });
+        analyzeButton.addEventListener('click', handleAnalyze);
+
+        function processFile(file) {
+            if (!file.type.startsWith('image/')) { alert('Please select an image file.'); return; }
+            uploadedFile = file;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                imagePreviewSection.classList.remove('hidden');
+                analyzeButtonSection.classList.remove('hidden');
+                document.getElementById('resultsSection').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function handleAnalyze() {
+            if (!uploadedFile) { alert('Please upload an image first.'); return; }
+            const formData = new FormData();
+            formData.append('file', uploadedFile);
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('loadingSection').classList.remove('hidden');
+            compareModels(formData);
+        }
+
+        async function compareModels(formData) {
+            try {
+                const response = await fetch('/api/compare-models', { method:'POST', body:formData });
+                const results = await response.json();
+                document.getElementById('loadingSection').classList.add('hidden');
+                if (results.success) displayResults(results);
+                else alert('Error: ' + results.error);
+            } catch (error) {
+                document.getElementById('loadingSection').classList.add('hidden');
+                alert('Error comparing models: ' + error.message);
+            }
+        }
+
+        function displayResults(results) {
+            const cnn = results.comparison.cnn;
+            const traditional = results.comparison.traditional_ml;
+            let cnnWins=false, confidenceAdvantage=false, speedAdvantage=false;
+
+            // CNN confidence is already 0-100 from API; SVM confidence is 0-1
+            if (cnn.available && traditional.available && cnn.predictions && traditional.prediction) {
+                const cnnConf = cnn.predictions[0].confidence;          // 0-100
+                const tradConf = traditional.prediction.confidence * 100; // 0-1 → 0-100
+                confidenceAdvantage = cnnConf > tradConf;
+                speedAdvantage = results.timing.cnn_time_ms < results.timing.traditional_ml_time_ms;
+                cnnWins = confidenceAdvantage || speedAdvantage;
+            }
+
+            const cnnContainer = document.getElementById('cnnResults');
+            cnnContainer.innerHTML = '';
+            if (cnn.available && cnn.predictions) {
+                cnn.predictions.forEach((pred, i) => {
+                    // CNN API returns confidence as 0-100 already
+                    const conf = pred.confidence.toFixed(1);
+                    const div = document.createElement('div');
+                    div.className = `flex items-center justify-between p-3 rounded-lg glass-elevated ${i===0 && cnnWins ? 'animate-pulse-glow' : ''}`;
+                    div.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="font-medium text-primary text-sm">${pred.species}</span>
+                            ${i===0 && cnnWins ? '<span class="text-xs">🏆</span>' : ''}
+                        </div>
+                        <span class="font-display font-bold text-sm" style="color:var(--bio-400);">${conf}%</span>
+                    `;
+                    cnnContainer.appendChild(div);
+                });
+            }
+
+            const tradContainer = document.getElementById('traditionalResults');
+            tradContainer.innerHTML = '';
+            if (traditional.available && traditional.prediction) {
+                // SVM API returns confidence as 0-1, so multiply by 100
+                const conf = (traditional.prediction.confidence * 100).toFixed(1);
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between p-3 rounded-lg glass-elevated';
+                div.innerHTML = `
+                    <span class="font-medium text-primary text-sm">${traditional.prediction.species}</span>
+                    <span class="font-display font-bold text-sm" style="color:var(--coral-500);">${conf}%</span>
+                `;
+                tradContainer.appendChild(div);
+            }
+
+            document.getElementById('cnnTime').innerHTML = `${results.timing.cnn_time_ms} ${speedAdvantage?'<span style="color:var(--bio-400);">⚡</span>':''}`;
+            document.getElementById('traditionalTime').innerHTML = `${results.timing.traditional_ml_time_ms}`;
+            createCharts(cnn, traditional, results.timing);
+            document.getElementById('resultsSection').classList.remove('hidden');
+        }
+
+        function createCharts(cnn, traditional, timing) {
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#94a3b8' : '#475569';
+            const gridColor = isDark ? 'rgba(100,130,180,.15)' : 'rgba(148,163,184,.2)';
+
+            const accuracyCtx = document.getElementById('accuracyChart').getContext('2d');
+            if(accuracyChart) accuracyChart.destroy();
+            accuracyChart = new Chart(accuracyCtx, {
+                type:'bar', data:{ labels:['CNN','Traditional ML'], datasets:[{
+                    label:'Accuracy (%)', data:[89.51,55.05],
+                    backgroundColor:['rgba(13,148,136,.7)','rgba(225,29,72,.5)'],
+                    borderColor:['#0d9488','#e11d48'], borderWidth:2, borderRadius:8
+                }]},
+                options:{ responsive:true, maintainAspectRatio:false,
+                    plugins:{ title:{display:true, text:'Model Accuracy', color:textColor, font:{size:14,weight:'bold',family:'Outfit'}}, legend:{display:false} },
+                    scales:{ y:{beginAtZero:true, max:100, ticks:{color:textColor}, grid:{color:gridColor}}, x:{ticks:{color:textColor}, grid:{display:false}} }
+                }
+            });
+
+            const speedCtx = document.getElementById('speedChart').getContext('2d');
+            if(speedChart) speedChart.destroy();
+            speedChart = new Chart(speedCtx, {
+                type:'bar', data:{ labels:['CNN','Traditional ML'], datasets:[{
+                    label:'Inference Time (ms)', data:[timing.cnn_time_ms, timing.traditional_ml_time_ms],
+                    backgroundColor:['rgba(13,125,227,.6)','rgba(249,115,22,.5)'],
+                    borderColor:['#0d7de3','#f97316'], borderWidth:2, borderRadius:8
+                }]},
+                options:{ responsive:true, maintainAspectRatio:false,
+                    plugins:{ title:{display:true, text:'Inference Speed', color:textColor, font:{size:14,weight:'bold',family:'Outfit'}}, legend:{display:false} },
+                    scales:{ y:{beginAtZero:true, ticks:{color:textColor}, grid:{color:gridColor}}, x:{ticks:{color:textColor}, grid:{display:false}} }
+                }
+            });
+        }
+    </script>
+
+    <script>
+        (function(){
+            var btn=document.getElementById('theme-toggle'),icon=document.getElementById('theme-icon'),root=document.documentElement;
+            icon.textContent = root.classList.contains('dark') ? 'dark_mode' : 'light_mode';
+            btn.addEventListener('click',function(){ root.classList.toggle('dark'); var d=root.classList.contains('dark'); localStorage.setItem('theme',d?'dark':'light'); icon.textContent=d?'dark_mode':'light_mode'; });
+        })();
+    </script>
+</body>
+</html>

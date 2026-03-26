@@ -22,6 +22,10 @@ import pandas as pd
 from datetime import datetime
 import tempfile
 import zipfile
+import pickle
+import time
+from skimage import io, color, feature, transform
+from skimage.measure import label, regionprops
 
 # Try to import optional dependencies
 try:
@@ -50,6 +54,13 @@ model = None
 idx_to_class = None
 class_to_idx = None
 species_database = None
+
+# Traditional ML global variables
+trad_ml_model = None
+trad_ml_scaler = None
+trad_ml_label_encoder = None
+trad_ml_img_size = None
+trad_ml_loaded = False
 
 def load_model():
     """Load the best trained CNN model based on accuracy analysis."""
@@ -191,6 +202,154 @@ def load_model():
         traceback.print_exc()
         return False
 
+def load_traditional_ml_model():
+    """Load the trained Traditional ML model."""
+    global trad_ml_model, trad_ml_scaler, trad_ml_label_encoder, trad_ml_img_size, trad_ml_loaded
+
+    model_path = Path("outputs/models/traditional_ml_model.pkl")
+
+    if not model_path.exists():
+        print("WARNING: Traditional ML model not found at outputs/models/traditional_ml_model.pkl")
+        trad_ml_loaded = False
+        return False
+
+    try:
+        print(f"Loading Traditional ML model from: {model_path}")
+
+        with open(model_path, 'rb') as f:
+            model_package = pickle.load(f)
+
+        trad_ml_model = model_package['model']
+        trad_ml_scaler = model_package['scaler']
+        trad_ml_label_encoder = model_package['label_encoder']
+        trad_ml_img_size = model_package['img_size']
+
+        print(f"SUCCESS: Traditional ML model loaded!")
+        print(f"   Validation Accuracy: {model_package['validation_accuracy']*100:.2f}%")
+        print(f"   Number of classes: {model_package['num_classes']}")
+
+        trad_ml_loaded = True
+        return True
+
+    except Exception as e:
+        print(f"Error loading Traditional ML model: {e}")
+        traceback.print_exc()
+        trad_ml_loaded = False
+        return False
+
+def extract_hog_features(image):
+    """Extract HOG features for Traditional ML model."""
+    if len(image.shape) == 3:
+        image = color.rgb2gray(image)
+
+    features = feature.hog(
+        image,
+        orientations=9,
+        pixels_per_cell=(8, 8),
+        cells_per_block=(2, 2),
+        block_norm='L2-Hys',
+        visualize=False,
+        feature_vector=True
+    )
+    return features
+
+def extract_color_histogram(image):
+    """Extract color histogram features for Traditional ML model."""
+    if len(image.shape) == 2:
+        hist = np.histogram(image, bins=32, range=(0, 1))[0]
+        return hist.flatten()
+
+    hist_features = []
+    for channel in range(3):
+        hist = np.histogram(image[:, :, channel], bins=8, range=(0, 1))[0]
+        hist_features.extend(hist)
+
+    return np.array(hist_features)
+
+def extract_shape_features(image):
+    """Extract basic shape features for Traditional ML model."""
+    if len(image.shape) == 3:
+        gray = color.rgb2gray(image)
+    else:
+        gray = image
+
+    thresh = gray > 0.3
+    labeled = label(thresh)
+    regions = regionprops(labeled)
+
+    if len(regions) == 0:
+        return np.array([0, 0, 0, 0, 0])
+
+    region = max(regions, key=lambda r: r.area)
+    area = region.area / (trad_ml_img_size[0] * trad_ml_img_size[1])
+    perimeter = region.perimeter / (2 * (trad_ml_img_size[0] + trad_ml_img_size[1]))
+    eccentricity = region.eccentricity
+    solidity = region.solidity
+    extent = region.extent
+
+    return np.array([area, perimeter, eccentricity, solidity, extent])
+
+def extract_all_features(image):
+    """Extract all features for Traditional ML model."""
+    hog_features = extract_hog_features(image)
+    color_features = extract_color_histogram(image)
+    shape_features = extract_shape_features(image)
+    return np.concatenate([hog_features, color_features, shape_features])
+
+def predict_with_traditional_ml(image):
+    """Make prediction using Traditional ML model."""
+    if not trad_ml_loaded:
+        return None
+
+    try:
+        # Convert PIL to numpy
+        if hasattr(image, 'mode'):
+            image = np.array(image)
+
+        # Ensure RGB
+        if len(image.shape) == 2:
+            image = color.gray2rgb(image)
+
+        if image.shape[2] == 4:
+            image = image[:, :, :3]
+
+        # Resize to model's expected size
+        image = transform.resize(image, trad_ml_img_size, anti_aliasing=True)
+
+        # Normalize
+        if image.max() > 1.0:
+            image = image / 255.0
+
+        # Extract features
+        features = extract_all_features(image)
+        features = features.reshape(1, -1)
+
+        # Scale features
+        features_scaled = trad_ml_scaler.transform(features)
+
+        # Predict
+        prediction = trad_ml_model.predict(features_scaled)[0]
+        species_name = trad_ml_label_encoder.inverse_transform([prediction])[0]
+
+        # Get decision function for confidence
+        decision = trad_ml_model.decision_function(features_scaled)[0]
+        confidence = np.max(decision)
+
+        # Normalize confidence to 0-1 range (approximate)
+        confidence_normalized = 1 / (1 + np.exp(-confidence/10))
+
+        return {
+            'species': species_name,
+            'confidence': float(confidence_normalized),
+            'model': 'Traditional ML (SVM)',
+            'accuracy': '55.05%'
+        }
+
+    except Exception as e:
+        print(f"Error in Traditional ML prediction: {e}")
+        traceback.print_exc()
+        return None
+
 def load_species_database():
     """Load the species database with proper error handling."""
     global species_database
@@ -293,6 +452,79 @@ def index():
     """Main page."""
     return render_template('index_enhanced_fixed.html')
 
+@app.route('/compare')
+def compare_models_page():
+    """Model comparison page."""
+    return render_template('compare_models.html')
+
+@app.route('/traditional')
+def traditional_ml_page():
+    """Traditional ML model page."""
+    return render_template('traditional_ml.html')
+
+@app.route('/api/predict-traditional', methods=['POST'])
+def api_predict_traditional():
+    """API endpoint for Traditional ML prediction only."""
+    try:
+        image = None
+
+        # Handle file upload
+        if 'file' in request.files and request.files['file'].filename != '':
+            file = request.files['file']
+            image = Image.open(file.stream)
+
+        # Handle URL (only if JSON request and no file)
+        elif request.is_json and request.json and 'url' in request.json:
+            url = request.json['url']
+            image, error_msg = load_image_from_url(url)
+            if image is None:
+                return jsonify({'error': error_msg}), 400
+
+        # Handle base64 image (only if JSON request and no file)
+        elif request.is_json and request.json and 'image_data' in request.json:
+            image_data = request.json['image_data']
+            if image_data.startswith('data:image'):
+                image_data = image_data.split(',')[1]
+            image_bytes = base64.b64decode(image_data)
+            image = Image.open(BytesIO(image_bytes))
+
+        # Validate image
+        if image is None:
+            return jsonify({
+                'error': 'No valid image provided. Please upload a file, provide a URL, or send base64 image data.'
+            }), 400
+
+        # Check if Traditional ML model is loaded
+        if not trad_ml_loaded:
+            return jsonify({
+                'error': 'Traditional ML model not available. Please check server logs.'
+            }), 503
+
+        # Make prediction with timing
+        start_time = time.time()
+        prediction = predict_with_traditional_ml(image)
+        inference_time = (time.time() - start_time) * 1000
+
+        if prediction is None:
+            return jsonify({'error': 'Failed to make prediction with Traditional ML model.'}), 500
+
+        return jsonify({
+            'success': True,
+            'prediction': prediction,
+            'inference_time_ms': round(inference_time, 2),
+            'model_info': {
+                'name': 'Traditional ML (SVM + HOG)',
+                'accuracy': '55.05%',
+                'features': '8129 dimensions (HOG + Color + Shape)',
+                'type': 'Support Vector Machine'
+            }
+        })
+
+    except Exception as e:
+        print(f"Error in Traditional ML prediction API: {e}")
+        traceback.print_exc()
+        return jsonify({'error': f'Traditional ML prediction failed: {str(e)}'}), 500
+
 @app.route('/api/predict', methods=['POST'])
 def api_predict():
     """API endpoint for single image prediction."""
@@ -341,6 +573,98 @@ def api_predict():
         print(f"Error in prediction API: {e}")
         traceback.print_exc()
         return jsonify({'error': f'Prediction failed: {str(e)}'}), 500
+
+@app.route('/api/compare-models', methods=['POST'])
+def api_compare_models():
+    """API endpoint for comparing CNN and Traditional ML predictions."""
+    try:
+        image = None
+
+        # Handle file upload
+        if 'file' in request.files and request.files['file'].filename != '':
+            file = request.files['file']
+            image = Image.open(file.stream)
+
+        # Handle URL (only if JSON request and no file)
+        elif request.is_json and request.json and 'url' in request.json:
+            url = request.json['url']
+            image, error_msg = load_image_from_url(url)
+            if image is None:
+                return jsonify({'error': error_msg}), 400
+
+        # Handle base64 image (only if JSON request and no file)
+        elif request.is_json and request.json and 'image_data' in request.json:
+            image_data = request.json['image_data']
+            if image_data.startswith('data:image'):
+                image_data = image_data.split(',')[1]
+            image_bytes = base64.b64decode(image_data)
+            image = Image.open(BytesIO(image_bytes))
+
+        # Validate image
+        if image is None:
+            return jsonify({
+                'error': 'No valid image provided. Please upload a file, provide a URL, or send base64 image data.'
+            }), 400
+
+        # Time the predictions
+        start_time = time.time()
+
+        # CNN Prediction
+        cnn_start = time.time()
+        cnn_predictions = predict_image(image)
+        cnn_time = (time.time() - cnn_start) * 1000  # Convert to ms
+
+        # Traditional ML Prediction
+        trad_start = time.time()
+        trad_prediction = predict_with_traditional_ml(image)
+        trad_time = (time.time() - trad_start) * 1000  # Convert to ms
+
+        total_time = (time.time() - start_time) * 1000
+
+        # Prepare results with enhanced comparison metrics
+        results = {
+            'success': True,
+            'comparison': {
+                'cnn': {
+                    'model_name': 'CNN (EfficientNet-B2)',
+                    'accuracy': '89.51%',
+                    'predictions': cnn_predictions,
+                    'top_prediction': cnn_predictions[0] if cnn_predictions else None,
+                    'inference_time_ms': round(cnn_time, 2),
+                    'available': cnn_predictions is not None,
+                    'validation_accuracy': 89.51,
+                    'advantages': ['Transfer Learning', 'Automatic Features', 'Robust to Variations']
+                },
+                'traditional_ml': {
+                    'model_name': 'Traditional ML (SVM + HOG)',
+                    'accuracy': '55.05%',
+                    'prediction': trad_prediction,
+                    'inference_time_ms': round(trad_time, 2),
+                    'available': trad_ml_loaded and trad_prediction is not None,
+                    'validation_accuracy': 55.05,
+                    'limitations': ['Manual Features', 'No Transfer Learning', 'Brittle to Noise']
+                }
+            },
+            'timing': {
+                'total_time_ms': round(total_time, 2),
+                'cnn_time_ms': round(cnn_time, 2),
+                'traditional_ml_time_ms': round(trad_time, 2),
+                'speed_advantage': 'CNN' if cnn_time < trad_time else 'Traditional ML'
+            },
+            'accuracy_difference': '+34.46%',
+            'validation_context': {
+                'dataset_size': '13,000+ validation images',
+                'species_count': 67,
+                'cnn_superiority': 'CNN is 1.63x more accurate'
+            }
+        }
+
+        return jsonify(results)
+
+    except Exception as e:
+        print(f"Error in model comparison API: {e}")
+        traceback.print_exc()
+        return jsonify({'error': f'Model comparison failed: {str(e)}'}), 500
 
 @app.route('/api/predict-batch', methods=['POST'])
 def api_predict_batch():
@@ -544,6 +868,9 @@ if load_model():
     load_species_database()
 else:
     print("Failed to load model!")
+
+print("Loading Traditional ML model...")
+load_traditional_ml_model()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

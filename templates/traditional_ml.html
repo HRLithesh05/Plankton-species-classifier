@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html id="root" class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Traditional ML | PlanktonAI</title>
+
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon.png') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='uniform-colors.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>tailwind.config = { darkMode:"class", theme:{ extend:{ fontFamily:{'sans':['Inter','system-ui','sans-serif'],'display':['Outfit','Inter','sans-serif']} } } }</script>
+    <script>(function(){var t=localStorage.getItem('theme');if(t==='light')document.documentElement.classList.remove('dark');else document.documentElement.classList.add('dark');})();</script>
+
+    <style>
+        .upload-area {border:2px dashed var(--border-main);background:var(--bg-elevated);border-radius:1.25rem;transition:all .35s;cursor:pointer;}
+        .upload-area:hover,.upload-area.dragover {border-color:var(--glow-400);background:rgba(245,158,11,.05);box-shadow:0 0 30px rgba(245,158,11,.08);}
+        .image-preview {max-width:100%;max-height:400px;object-fit:contain;border-radius:.75rem;box-shadow:0 4px 15px rgba(0,0,0,.1);}
+        .gradient-amber {background:linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);}
+    </style>
+</head>
+
+<body class="font-sans">
+    <!-- Header -->
+    <header class="sticky top-0 z-50" style="background:var(--bg-card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border-main);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 gradient-amber rounded-xl flex items-center justify-center shadow-lg">
+                        <span class="material-symbols-outlined text-white text-xl">precision_manufacturing</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-display font-bold" style="color:var(--glow-500);">Traditional ML</h1>
+                        <p class="text-xs text-muted">SVM + HOG Features · 55.05% Accuracy</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="/compare" class="btn-ghost text-xs"><span class="material-symbols-outlined text-sm mr-1">compare_arrows</span>Compare</a>
+                    <a href="/" class="btn-ocean text-xs"><span class="material-symbols-outlined text-sm mr-1">arrow_back</span>CNN</a>
+                    <button id="theme-toggle" class="theme-btn" title="Toggle dark/light mode">
+                        <span class="material-symbols-outlined text-lg" id="theme-icon">dark_mode</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Info banner -->
+        <div class="glass-card mb-8 overflow-hidden">
+            <div class="gradient-amber p-5 text-white">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-2xl opacity-90">science</span>
+                    <div>
+                        <h3 class="font-display font-semibold text-lg">Traditional ML Pipeline</h3>
+                        <p class="text-sm opacity-80">SVM with Hand-Crafted Features</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div class="glass-elevated rounded-xl p-4 text-center">
+                        <span class="material-symbols-outlined mb-2 block" style="color:var(--glow-500);">fingerprint</span>
+                        <h4 class="font-display font-semibold text-primary mb-1">HOG Features</h4>
+                        <p class="text-xs text-secondary">Histogram of Oriented Gradients captures edge + shape patterns</p>
+                    </div>
+                    <div class="glass-elevated rounded-xl p-4 text-center">
+                        <span class="material-symbols-outlined mb-2 block" style="color:var(--glow-500);">palette</span>
+                        <h4 class="font-display font-semibold text-primary mb-1">Color Histograms</h4>
+                        <p class="text-xs text-secondary">8-bin per-channel color distribution analysis</p>
+                    </div>
+                    <div class="glass-elevated rounded-xl p-4 text-center">
+                        <span class="material-symbols-outlined mb-2 block" style="color:var(--glow-500);">category</span>
+                        <h4 class="font-display font-semibold text-primary mb-1">SVM Classifier</h4>
+                        <p class="text-xs text-secondary">Support Vector Machine with RBF kernel</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload -->
+        <div class="glass-card p-6 mb-8">
+            <h2 class="font-display font-semibold text-primary text-lg mb-4">Upload Image</h2>
+            <div id="uploadArea" class="upload-area p-10 text-center mb-4">
+                <div class="animate-float" style="animation-duration:4s;">
+                    <span class="material-symbols-outlined text-5xl block mb-3" style="color:var(--glow-400);opacity:.5;">add_photo_alternate</span>
+                </div>
+                <p class="font-display font-medium text-primary text-lg mb-1">Drop your image here</p>
+                <p class="text-sm text-muted">JPG, PNG, WEBP up to 10MB</p>
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
+            </div>
+
+            <div id="imagePreviewSection" class="hidden mb-4">
+                <div class="glass-elevated p-4 rounded-xl text-center">
+                    <img id="imagePreview" class="image-preview mx-auto mb-2" alt="Preview">
+                    <p class="text-xs text-secondary"><span id="fileName"></span> · <span id="fileSize"></span></p>
+                </div>
+            </div>
+
+            <div id="analyzeButtonSection" class="hidden text-center">
+                <button id="analyzeButton" class="btn-glow text-base px-8 py-3.5" style="background:linear-gradient(135deg, var(--glow-500), #b45309);">
+                    <span class="material-symbols-outlined mr-2">analytics</span>Classify with Traditional ML
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loadingSection" class="hidden">
+            <div class="glass-card p-10 text-center">
+                <div class="inline-block mb-5 relative">
+                    <div class="w-14 h-14 rounded-full border-2 border-transparent animate-spin" style="border-top-color:var(--glow-400);border-right-color:var(--glow-500);"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-lg" style="color:var(--glow-500);">precision_manufacturing</span>
+                    </div>
+                </div>
+                <p class="font-display font-semibold text-primary text-lg">Processing with Traditional ML…</p>
+                <p class="text-sm text-secondary">Extracting HOG features → SVM classification</p>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultsSection" class="hidden">
+            <div class="glass-card overflow-hidden mb-6">
+                <div class="gradient-amber p-6 text-white text-center">
+                    <p class="text-sm uppercase tracking-wider opacity-80 mb-1">Prediction</p>
+                    <h2 id="predictionResult" class="font-display font-bold text-3xl mb-2">-</h2>
+                    <div class="flex items-center justify-center gap-3">
+                        <div class="text-center">
+                            <div id="confidenceValue" class="text-xl font-display font-bold">0%</div>
+                            <div class="text-xs opacity-80">Confidence</div>
+                        </div>
+                        <div class="px-3 py-1 bg-white/15 rounded-full text-xs font-semibold border border-white/20">
+                            Traditional ML
+                        </div>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div class="glass-elevated p-3 rounded-lg">
+                            <span class="text-xs text-secondary">Model</span>
+                            <p id="modelType" class="font-display font-semibold text-primary text-sm">SVM</p>
+                        </div>
+                        <div class="glass-elevated p-3 rounded-lg">
+                            <span class="text-xs text-secondary">Inference Time</span>
+                            <p id="inferenceTime" class="font-display font-semibold text-primary text-sm">-</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 glass-elevated rounded-lg p-4 text-center">
+                        <p class="text-sm text-secondary mb-2">Want higher accuracy?</p>
+                        <div class="flex gap-3 justify-center">
+                            <a href="/" class="btn-ocean text-xs">Try CNN (89.51%)</a>
+                            <a href="/compare" class="btn-ghost text-xs">Compare Both</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let uploadedFile = null;
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const analyzeButton = document.getElementById('analyzeButton');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', e=>{ e.preventDefault(); uploadArea.classList.add('dragover'); });
+        uploadArea.addEventListener('dragleave', e=>{ e.preventDefault(); uploadArea.classList.remove('dragover'); });
+        uploadArea.addEventListener('drop', e=>{ e.preventDefault(); uploadArea.classList.remove('dragover'); if(e.dataTransfer.files.length>0) processFile(e.dataTransfer.files[0]); });
+        fileInput.addEventListener('change', e=>{ if(e.target.files[0]) processFile(e.target.files[0]); });
+        analyzeButton.addEventListener('click', handleAnalyze);
+
+        function processFile(file) {
+            if (!file.type.startsWith('image/')) { alert('Please select an image file.'); return; }
+            uploadedFile = file;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imagePreview').src = e.target.result;
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileSize').textContent = formatFileSize(file.size);
+                document.getElementById('imagePreviewSection').classList.remove('hidden');
+                document.getElementById('analyzeButtonSection').classList.remove('hidden');
+                document.getElementById('resultsSection').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes===0) return '0 Bytes';
+            const k=1024, s=['Bytes','KB','MB','GB'];
+            const i=Math.floor(Math.log(bytes)/Math.log(k));
+            return parseFloat((bytes/Math.pow(k,i)).toFixed(2))+' '+s[i];
+        }
+
+        function handleAnalyze() {
+            if (!uploadedFile) return;
+            const fd = new FormData();
+            fd.append('file', uploadedFile);
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('loadingSection').classList.remove('hidden');
+
+            fetch('/api/predict-traditional', { method:'POST', body:fd })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('loadingSection').classList.add('hidden');
+                if (data.success) {
+                    document.getElementById('predictionResult').textContent = data.prediction.species.replace(/_/g,' ');
+                    document.getElementById('confidenceValue').textContent = (data.prediction.confidence*100).toFixed(1) + '%';
+                    document.getElementById('modelType').textContent = data.prediction.model || 'SVM';
+                    document.getElementById('inferenceTime').textContent = data.inference_time_ms + ' ms';
+                    document.getElementById('resultsSection').classList.remove('hidden');
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(err => {
+                document.getElementById('loadingSection').classList.add('hidden');
+                alert('Error: ' + err.message);
+            });
+        }
+    </script>
+
+    <script>
+        (function(){
+            var btn=document.getElementById('theme-toggle'),icon=document.getElementById('theme-icon'),root=document.documentElement;
+            icon.textContent = root.classList.contains('dark') ? 'dark_mode' : 'light_mode';
+            btn.addEventListener('click',function(){ root.classList.toggle('dark'); var d=root.classList.contains('dark'); localStorage.setItem('theme',d?'dark':'light'); icon.textContent=d?'dark_mode':'light_mode'; });
+        })();
+    </script>
+</body>
+</html>

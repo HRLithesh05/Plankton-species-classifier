@@ -1,0 +1,479 @@
+/* ============================================================
+   PLANKTON CLASSIFIER — PREMIUM DESIGN SYSTEM
+   Ocean / Bioluminescence Theme
+   ============================================================ */
+
+/* ----- Google Fonts import (Outfit for headings, Inter for body) ----- */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  /* --- Ocean palette --- */
+  --ocean-50:  #e8f4fd;
+  --ocean-100: #c5e4f9;
+  --ocean-200: #8ecbf5;
+  --ocean-300: #54b0ef;
+  --ocean-400: #2196f3;
+  --ocean-500: #0d7de3;
+  --ocean-600: #0962b8;
+  --ocean-700: #064a8e;
+  --ocean-800: #043666;
+  --ocean-900: #021d3a;
+
+  /* --- Teal accent (bioluminescence) --- */
+  --bio-50:  #e6fcf5;
+  --bio-100: #b2f5ea;
+  --bio-200: #81e6d9;
+  --bio-300: #4fd1c5;
+  --bio-400: #38b2ac;
+  --bio-500: #0d9488;
+  --bio-600: #0f766e;
+  --bio-700: #115e59;
+  --bio-800: #134e4a;
+  --bio-900: #042f2e;
+
+  /* --- Coral accent --- */
+  --coral-400: #fb7185;
+  --coral-500: #f43f5e;
+  --coral-600: #e11d48;
+
+  /* --- Amber glow --- */
+  --glow-400: #fbbf24;
+  --glow-500: #f59e0b;
+
+  /* ---- Light mode surfaces ---- */
+  --bg-page:       #f0f6ff;
+  --bg-card:       rgba(255,255,255,0.85);
+  --bg-elevated:   rgba(241,245,249,0.9);
+  --bg-glass:      rgba(255,255,255,0.55);
+  --border-main:   rgba(148,163,184,0.3);
+  --border-accent: rgba(13,125,227,0.15);
+  --text-primary:  #0f172a;
+  --text-secondary:#475569;
+  --text-muted:    #94a3b8;
+  --shadow-card:   0 4px 30px rgba(0,0,0,0.06);
+  --shadow-glow:   0 0 40px rgba(13,125,227,0.12);
+  --backdrop-blur:  blur(16px);
+}
+
+html.dark {
+  --bg-page:       #020a1a;
+  --bg-card:       rgba(15,25,50,0.75);
+  --bg-elevated:   rgba(20,35,65,0.8);
+  --bg-glass:      rgba(15,25,50,0.45);
+  --border-main:   rgba(100,130,180,0.2);
+  --border-accent: rgba(56,178,172,0.25);
+  --text-primary:  #e8f0fe;
+  --text-secondary:#94a3b8;
+  --text-muted:    #4b6a9b;
+  --shadow-card:   0 4px 40px rgba(0,0,0,0.4);
+  --shadow-glow:   0 0 60px rgba(56,178,172,0.15);
+  --backdrop-blur:  blur(20px);
+}
+
+/* ============================================================
+   BASE RESET
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'system-ui', -apple-system, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background .4s ease, color .3s ease;
+}
+
+/* Background gradient + animated mesh */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(13,125,227,.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(56,178,172,.10) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(59,130,246,.06) 0%, transparent 50%);
+  animation: meshDrift 30s ease-in-out infinite alternate;
+}
+html.dark body::before {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(13,125,227,.20) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(56,178,172,.14) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(168,85,247,.08) 0%, transparent 50%);
+}
+@keyframes meshDrift {
+  0%   { transform: translate(0,0) scale(1); }
+  100% { transform: translate(-20px,10px) scale(1.05); }
+}
+
+h1,h2,h3,h4,h5,h6 { font-family: 'Outfit', 'Inter', sans-serif; }
+
+/* ============================================================
+   GLASS CARD
+   ============================================================ */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--border-main);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.glass-card:hover {
+  box-shadow: var(--shadow-glow), var(--shadow-card);
+}
+
+.glass-elevated {
+  background: var(--bg-elevated);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--border-main);
+  border-radius: 1rem;
+}
+
+.glass-subtle {
+  background: var(--bg-glass);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--border-main);
+  border-radius: .75rem;
+}
+
+/* ============================================================
+   GRADIENT RIBBONS / HEADERS
+   ============================================================ */
+.gradient-ocean {
+  background: linear-gradient(135deg, #0962b8 0%, #0d9488 50%, #38b2ac 100%);
+}
+.gradient-bio {
+  background: linear-gradient(135deg, #0d9488 0%, #2dd4bf 50%, #99f6e4 100%);
+}
+.gradient-coral {
+  background: linear-gradient(135deg, #e11d48 0%, #fb7185 100%);
+}
+.gradient-deep {
+  background: linear-gradient(135deg, #021d3a 0%, #064a8e 40%, #0d9488 100%);
+}
+/* Main prediction result banner — the star of the show */
+.gradient-bg {
+  background: linear-gradient(135deg, #0962b8 0%, #0d9488 50%, #2dd4bf 100%);
+  position: relative;
+}
+.gradient-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle 120px at 20% 30%, rgba(255,255,255,.15) 0%, transparent 100%),
+    radial-gradient(circle 100px at 80% 70%, rgba(255,255,255,.10) 0%, transparent 100%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* ============================================================
+   TEXT UTILITIES
+   ============================================================ */
+.text-primary   { color: var(--text-primary) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-muted     { color: var(--text-muted) !important; }
+.text-gradient {
+  background: linear-gradient(135deg, var(--ocean-500), var(--bio-400));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+html.dark .text-gradient {
+  background: linear-gradient(135deg, var(--ocean-300), var(--bio-300));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* ============================================================
+   BUTTONS  
+   ============================================================ */
+.btn-ocean {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .65rem 1.5rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: .9rem;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ocean-500), var(--bio-500));
+  border: none;
+  border-radius: .75rem;
+  cursor: pointer;
+  transition: all .25s ease;
+  box-shadow: 0 4px 15px rgba(13,125,227,.3);
+  text-decoration: none;
+}
+.btn-ocean:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(13,125,227,.4);
+}
+.btn-ocean:active { transform: translateY(0) scale(0.98); }
+
+.btn-glow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .75rem 2rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ocean-600), var(--bio-500));
+  border: none;
+  border-radius: .875rem;
+  cursor: pointer;
+  transition: all .3s ease;
+  box-shadow: 0 0 25px rgba(13,148,136,.35), 0 4px 15px rgba(0,0,0,.15);
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+}
+.btn-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,.2), transparent 60%);
+  pointer-events: none;
+}
+.btn-glow:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 40px rgba(13,148,136,.5), 0 10px 30px rgba(0,0,0,.2);
+}
+
+/* Secondary / outline */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  padding: .6rem 1.25rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: .875rem;
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-main);
+  border-radius: .75rem;
+  cursor: pointer;
+  transition: all .2s ease;
+  text-decoration: none;
+}
+.btn-ghost:hover {
+  color: var(--text-primary);
+  border-color: var(--ocean-400);
+  background: var(--bg-glass);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+.theme-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: .75rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-main);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all .25s ease;
+}
+.theme-btn:hover {
+  color: var(--ocean-400);
+  border-color: var(--ocean-400);
+  box-shadow: 0 0 15px rgba(13,125,227,.15);
+  transform: rotate(15deg);
+}
+
+/* ============================================================
+   TAB SYSTEM
+   ============================================================ */
+.tab-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .625rem 1.25rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: .875rem;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: .75rem;
+  cursor: pointer;
+  transition: all .25s ease;
+}
+.tab-pill:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+.tab-pill.active {
+  color: #fff;
+  background: linear-gradient(135deg, var(--ocean-500), var(--bio-500));
+  box-shadow: 0 4px 15px rgba(13,125,227,.35);
+}
+/* Keep old class for JS compatibility */
+.tab-active {
+  color: #fff !important;
+  background: linear-gradient(135deg, var(--ocean-500), var(--bio-500)) !important;
+  box-shadow: 0 4px 15px rgba(13,125,227,.35) !important;
+}
+
+/* ============================================================
+   UPLOAD ZONE
+   ============================================================ */
+.upload-zone {
+  position: relative;
+  border: 2px dashed var(--border-main);
+  border-radius: 1.25rem;
+  background: var(--bg-elevated);
+  transition: all .35s ease;
+  cursor: pointer;
+}
+.upload-zone:hover, .upload-zone.dragover {
+  border-color: var(--bio-400);
+  background: rgba(13,148,136,.06);
+  box-shadow: 0 0 30px rgba(13,148,136,.1);
+}
+.upload-zone::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 1rem;
+  border: 1px dashed transparent;
+  transition: border-color .35s;
+  pointer-events: none;
+}
+.upload-zone:hover::after {
+  border-color: rgba(13,148,136,.2);
+}
+
+/* ============================================================
+   PREDICTION GLOW BANNER
+   ============================================================ */
+.prediction-glow {
+  box-shadow:
+    0 0 50px rgba(13,148,136,.3),
+    0 25px 50px rgba(0,0,0,.15),
+    inset 0 1px 0 rgba(255,255,255,.1);
+}
+
+/* ============================================================
+   STATS RING
+   ============================================================ */
+.stat-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(13,148,136,.15), rgba(13,125,227,.15));
+  border: 2px solid rgba(13,148,136,.3);
+}
+html.dark .stat-ring {
+  border-color: rgba(56,178,172,.3);
+}
+
+/* ============================================================
+   PROGRESS BAR (for batch)
+   ============================================================ */
+.progress-track {
+  height: .375rem;
+  border-radius: 1rem;
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 1rem;
+  background: linear-gradient(90deg, var(--ocean-500), var(--bio-400));
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 0 8px rgba(13,148,136,.4);
+}
+
+/* ============================================================
+   INPUT FIELDS
+   ============================================================ */
+.input-glass {
+  width: 100%;
+  padding: .625rem 1rem;
+  font-family: 'Inter', sans-serif;
+  font-size: .875rem;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-main);
+  border-radius: .75rem;
+  outline: none;
+  transition: border-color .25s, box-shadow .25s;
+}
+.input-glass::placeholder { color: var(--text-muted); }
+.input-glass:focus {
+  border-color: var(--bio-400);
+  box-shadow: 0 0 0 3px rgba(13,148,136,.12);
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-main); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ============================================================
+   MICRO-ANIMATIONS
+   ============================================================ */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(13,148,136,.3); }
+  50%      { box-shadow: 0 0 20px rgba(13,148,136,.5); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulse-glow 2.5s ease-in-out infinite; }
+
+/* Status dot */
+.status-dot {
+  width: .5rem;
+  height: .5rem;
+  border-radius: 50%;
+  background: var(--bio-400);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ============================================================
+   RESPONSIVE HELPERS
+   ============================================================ */
+@media (max-width: 640px) {
+  .glass-card { border-radius: 1rem; }
+  .tab-pill { padding: .5rem .875rem; font-size: .8rem; }
+}
+
+/* ============================================================
+   MATERIAL SYMBOLS OVERRIDE
+   ============================================================ */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}

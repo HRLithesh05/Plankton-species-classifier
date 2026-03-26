@@ -148,16 +148,14 @@ class EnhancedPlanktonClassifierFixed {
     }
 
     switchTab(tabId) {
-        // Update tab buttons
+        // Update tab buttons — new design system
         this.tabButtons.forEach(button => {
-            button.classList.remove('tab-active');
-            button.classList.add('text-gray-600', 'dark:text-gray-300', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
+            button.classList.remove('tab-active', 'active');
         });
 
         const activeButton = document.getElementById(`tab-${tabId}`);
         if (activeButton) {
-            activeButton.classList.add('tab-active');
-            activeButton.classList.remove('text-gray-600', 'dark:text-gray-300', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
+            activeButton.classList.add('tab-active', 'active');
         }
 
         // Update content
@@ -347,14 +345,40 @@ class EnhancedPlanktonClassifierFixed {
         // Confidence status
         const confidence = topPrediction.confidence;
         if (confidence >= 70) {
-            this.confidenceStatus.textContent = 'High Confidence';
-            this.confidenceStatus.className = 'px-4 py-2 bg-green-500 bg-opacity-20 rounded-full text-sm font-semibold text-green-300';
+            this.confidenceStatus.textContent = '✅ High Confidence';
+            this.confidenceStatus.className = 'px-4 py-2 bg-white/15 backdrop-blur rounded-full text-sm font-semibold border border-white/20';
         } else if (confidence >= 50) {
-            this.confidenceStatus.textContent = 'Medium Confidence';
-            this.confidenceStatus.className = 'px-4 py-2 bg-yellow-500 bg-opacity-20 rounded-full text-sm font-semibold text-yellow-300';
+            this.confidenceStatus.textContent = '⚠️ Medium Confidence';
+            this.confidenceStatus.className = 'px-4 py-2 bg-white/15 backdrop-blur rounded-full text-sm font-semibold border border-yellow-300/30';
         } else {
-            this.confidenceStatus.textContent = 'Low Confidence';
-            this.confidenceStatus.className = 'px-4 py-2 bg-red-500 bg-opacity-20 rounded-full text-sm font-semibold text-red-300';
+            this.confidenceStatus.textContent = '🔴 Low Confidence';
+            this.confidenceStatus.className = 'px-4 py-2 bg-white/15 backdrop-blur rounded-full text-sm font-semibold border border-red-300/30';
+        }
+
+        // Low confidence warning banner
+        const existingWarning = document.getElementById('confidence-warning');
+        if (existingWarning) existingWarning.remove();
+
+        if (confidence < 70) {
+            const warning = document.createElement('div');
+            warning.id = 'confidence-warning';
+            warning.className = 'rounded-xl p-4 mb-8 flex items-start gap-3';
+            warning.style.cssText = 'background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.25);';
+            warning.innerHTML = `
+                <span class="material-symbols-outlined flex-shrink-0 mt-0.5" style="color:var(--glow-500);">warning</span>
+                <div>
+                    <h4 class="font-display font-semibold text-sm text-primary mb-1">⚠️ Low Confidence — Consider Verifying</h4>
+                    <p class="text-xs text-secondary">
+                        The model is only <strong>${confidence.toFixed(1)}%</strong> confident in this prediction.
+                        Results below 70% may be unreliable. Try the
+                        <a href="/compare" class="font-semibold underline" style="color:var(--ocean-400);">Model Comparison</a>
+                        for a second opinion, or consult the species database.
+                    </p>
+                </div>
+            `;
+            // Insert after the prediction banner
+            const predBanner = this.analysisResults.querySelector('.gradient-bg');
+            if (predBanner) predBanner.parentNode.insertBefore(warning, predBanner.nextSibling);
         }
 
         // Load species information
@@ -389,24 +413,24 @@ class EnhancedPlanktonClassifierFixed {
         this.speciesDetails.innerHTML = `
             <div class="grid md:grid-cols-2 gap-4">
                 <div>
-                    <h5 class="font-semibold text-blue-700 dark:text-blue-300 mb-2">Scientific Classification</h5>
-                    <p class="text-sm"><strong>Scientific Name:</strong> ${data.scientific_name || 'Unknown'}</p>
-                    <p class="text-sm"><strong>Common Name:</strong> ${data.common_name || data.species_id.replace(/_/g, ' ')}</p>
+                    <h5 class="font-display font-semibold mb-2" style="color:var(--ocean-400);">Scientific Classification</h5>
+                    <p class="text-sm text-secondary"><strong class="text-primary">Scientific Name:</strong> ${data.scientific_name || 'Unknown'}</p>
+                    <p class="text-sm text-secondary"><strong class="text-primary">Common Name:</strong> ${data.common_name || data.species_id.replace(/_/g, ' ')}</p>
                 </div>
                 <div>
-                    <h5 class="font-semibold text-blue-700 dark:text-blue-300 mb-2">Habitat & Role</h5>
-                    <p class="text-sm"><strong>Habitat:</strong> ${data.habitat || 'Marine waters'}</p>
-                    <p class="text-sm"><strong>Ecological Role:</strong> ${data.ecological_role || 'Primary producer/consumer'}</p>
+                    <h5 class="font-display font-semibold mb-2" style="color:var(--ocean-400);">Habitat & Role</h5>
+                    <p class="text-sm text-secondary"><strong class="text-primary">Habitat:</strong> ${data.habitat || 'Marine waters'}</p>
+                    <p class="text-sm text-secondary"><strong class="text-primary">Role:</strong> ${data.ecological_role || 'Primary producer/consumer'}</p>
                 </div>
             </div>
             <div class="mt-4">
-                <h5 class="font-semibold text-blue-700 dark:text-blue-300 mb-2">Description</h5>
-                <p class="text-sm">${data.description || `${data.common_name || data.species_id} is a plankton species found in marine environments.`}</p>
+                <h5 class="font-display font-semibold mb-2" style="color:var(--ocean-400);">Description</h5>
+                <p class="text-sm text-secondary">${data.description || `${data.common_name || data.species_id} is a plankton species found in marine environments.`}</p>
             </div>
             ${data.characteristics ? `
             <div class="mt-4">
-                <h5 class="font-semibold text-blue-700 dark:text-blue-300 mb-2">Characteristics</h5>
-                <p class="text-sm">${data.characteristics}</p>
+                <h5 class="font-display font-semibold mb-2" style="color:var(--ocean-400);">Characteristics</h5>
+                <p class="text-sm text-secondary">${data.characteristics}</p>
             </div>
             ` : ''}
         `;
@@ -427,18 +451,18 @@ class EnhancedPlanktonClassifierFixed {
                 datasets: [{
                     data: predictions.map(p => p.confidence),
                     backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)',
-                        'rgba(16, 185, 129, 0.8)',
-                        'rgba(245, 158, 11, 0.8)',
-                        'rgba(239, 68, 68, 0.8)',
-                        'rgba(139, 92, 246, 0.8)'
+                        'rgba(13, 148, 136, 0.7)',
+                        'rgba(13, 125, 227, 0.7)',
+                        'rgba(245, 158, 11, 0.7)',
+                        'rgba(168, 85, 247, 0.7)',
+                        'rgba(251, 113, 133, 0.7)'
                     ],
                     borderColor: [
-                        'rgba(59, 130, 246, 1)',
-                        'rgba(16, 185, 129, 1)',
+                        'rgba(13, 148, 136, 1)',
+                        'rgba(13, 125, 227, 1)',
                         'rgba(245, 158, 11, 1)',
-                        'rgba(239, 68, 68, 1)',
-                        'rgba(139, 92, 246, 1)'
+                        'rgba(168, 85, 247, 1)',
+                        'rgba(251, 113, 133, 1)'
                     ],
                     borderWidth: 2,
                     borderRadius: 6,
@@ -472,18 +496,17 @@ class EnhancedPlanktonClassifierFixed {
 
     buildDetailedResults(predictions) {
         this.detailedResults.innerHTML = predictions.map((pred, index) => `
-            <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
-                <div class="flex items-center space-x-3">
-                    <span class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-semibold">
+            <div class="flex items-center justify-between p-3 glass-elevated rounded-lg">
+                <div class="flex items-center gap-3">
+                    <span class="w-6 h-6 gradient-ocean text-white rounded-full flex items-center justify-center text-xs font-bold font-display">
                         ${index + 1}
                     </span>
-                    <span class="font-medium text-gray-900 dark:text-white">${pred.species.replace(/_/g, ' ')}</span>
+                    <span class="font-medium text-primary text-sm">${pred.species.replace(/_/g, ' ')}</span>
                 </div>
                 <div class="text-right">
-                    <div class="font-semibold text-sm">${pred.confidence.toFixed(2)}%</div>
-                    <div class="w-24 h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-blue-500 to-blue-700 rounded-full"
-                             style="width: ${(pred.confidence / predictions[0].confidence) * 100}%"></div>
+                    <div class="font-display font-bold text-sm text-primary">${pred.confidence.toFixed(2)}%</div>
+                    <div class="w-24 h-1.5 rounded-full overflow-hidden" style="background:var(--bg-elevated);">
+                        <div class="h-full rounded-full" style="background:linear-gradient(90deg,var(--ocean-500),var(--bio-400)); width:${(pred.confidence / predictions[0].confidence) * 100}%;"></div>
                     </div>
                 </div>
             </div>
@@ -641,26 +664,26 @@ class EnhancedPlanktonClassifierFixed {
             if (result.success) {
                 const topPrediction = result.predictions[0];
                 return `
-                    <div class="bg-white dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                    <div class="glass-card p-4">
                         <div class="flex items-center justify-between mb-2">
-                            <h5 class="font-medium text-sm truncate flex-1">${result.filename}</h5>
-                            <span class="text-xs text-green-600 ml-2">✓</span>
+                            <h5 class="font-medium text-sm text-primary truncate flex-1">${result.filename}</h5>
+                            <span class="text-xs ml-2" style="color:var(--bio-400);">✓</span>
                         </div>
-                        <div class="text-lg font-semibold text-blue-600 dark:text-blue-400">${topPrediction.species.replace(/_/g, ' ')}</div>
-                        <div class="text-sm text-gray-600 dark:text-gray-400">${topPrediction.confidence.toFixed(1)}% confidence</div>
-                        <div class="mt-2 w-full h-1 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
-                            <div class="h-full bg-blue-600 rounded-full" style="width: ${topPrediction.confidence}%"></div>
+                        <div class="text-base font-display font-semibold" style="color:var(--ocean-400);">${topPrediction.species.replace(/_/g, ' ')}</div>
+                        <div class="text-sm text-secondary">${topPrediction.confidence.toFixed(1)}% confidence</div>
+                        <div class="mt-2 progress-track">
+                            <div class="progress-fill" style="width: ${topPrediction.confidence}%"></div>
                         </div>
                     </div>
                 `;
             } else {
                 return `
-                    <div class="bg-white dark:bg-gray-700 rounded-lg p-4 border border-red-200 dark:border-red-600">
+                    <div class="glass-card p-4" style="border-color:rgba(225,29,72,.3);">
                         <div class="flex items-center justify-between mb-2">
-                            <h5 class="font-medium text-sm truncate flex-1">${result.filename}</h5>
-                            <span class="text-xs text-red-600 ml-2">✗</span>
+                            <h5 class="font-medium text-sm text-primary truncate flex-1">${result.filename}</h5>
+                            <span class="text-xs ml-2" style="color:var(--coral-500);">✗</span>
                         </div>
-                        <div class="text-sm text-red-600 dark:text-red-400">Error: ${result.error}</div>
+                        <div class="text-sm" style="color:var(--coral-500);">Error: ${result.error}</div>
                     </div>
                 `;
             }
@@ -812,15 +835,15 @@ class EnhancedPlanktonClassifierFixed {
         }
 
         this.speciesGrid.innerHTML = entries.map(([key, species]) => `
-            <div class="bg-white dark:bg-gray-700 rounded-lg p-6 border border-gray-200 dark:border-gray-600 hover:shadow-lg transition-shadow">
-                <div class="mb-4">
-                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">${species.common_name || key.replace(/_/g, ' ')}</h4>
-                    <p class="text-sm italic text-gray-600 dark:text-gray-400">${species.scientific_name || 'Scientific name unknown'}</p>
+            <div class="glass-card species-card p-5">
+                <div class="mb-3">
+                    <h4 class="font-display font-semibold text-primary text-base">${species.common_name || key.replace(/_/g, ' ')}</h4>
+                    <p class="text-xs italic text-secondary">${species.scientific_name || 'Scientific name unknown'}</p>
                 </div>
-                <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">${species.description || `${species.common_name || key} is a plankton species found in marine environments.`}</p>
-                <div class="space-y-2 text-xs">
-                    <div><strong>Habitat:</strong> ${species.habitat || 'Marine waters'}</div>
-                    <div><strong>Ecological Role:</strong> ${species.ecological_role || 'Primary producer/consumer'}</div>
+                <p class="text-sm text-secondary mb-3 line-clamp-3">${species.description || `${species.common_name || key} is a plankton species found in marine environments.`}</p>
+                <div class="space-y-1.5 text-xs text-secondary">
+                    <div><strong class="text-primary">Habitat:</strong> ${species.habitat || 'Marine waters'}</div>
+                    <div><strong class="text-primary">Role:</strong> ${species.ecological_role || 'Primary producer/consumer'}</div>
                 </div>
             </div>
         `).join('');
@@ -912,14 +935,17 @@ class EnhancedPlanktonClassifierFixed {
 
                 if (this.modelInfo.status === 'ready') {
                     this.modelStatus.textContent = 'Ready';
-                    this.modelStatus.className = 'font-semibold text-green-600';
+                    this.modelStatus.className = 'font-semibold';
+                    this.modelStatus.style.color = 'var(--bio-400)';
                 } else {
                     this.modelStatus.textContent = 'Loading...';
-                    this.modelStatus.className = 'font-semibold text-yellow-600';
+                    this.modelStatus.className = 'font-semibold';
+                    this.modelStatus.style.color = 'var(--glow-500)';
                 }
             } else {
                 this.modelStatus.textContent = 'Error';
-                this.modelStatus.className = 'font-semibold text-red-600';
+                this.modelStatus.className = 'font-semibold';
+                this.modelStatus.style.color = 'var(--coral-500)';
             }
         } catch (error) {
             console.error('Failed to load model info:', error);
@@ -936,7 +962,8 @@ class EnhancedPlanktonClassifierFixed {
 
         // Create modal overlay
         const modalOverlay = document.createElement('div');
-        modalOverlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modalOverlay.className = 'fixed inset-0 flex items-center justify-center z-50';
+        modalOverlay.style.cssText = 'background:rgba(0,0,0,.6); backdrop-filter:blur(6px);';
         modalOverlay.onclick = (e) => {
             if (e.target === modalOverlay) {
                 document.body.removeChild(modalOverlay);
@@ -945,7 +972,7 @@ class EnhancedPlanktonClassifierFixed {
 
         // Create modal content
         const modalContent = document.createElement('div');
-        modalContent.className = 'bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto';
+        modalContent.className = 'glass-card max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto';
 
         modalContent.innerHTML = `
             <div class="p-6">
@@ -1157,7 +1184,6 @@ class EnhancedPlanktonClassifierFixed {
 let planktonClassifier;
 document.addEventListener('DOMContentLoaded', () => {
     planktonClassifier = new EnhancedPlanktonClassifierFixed();
+    // Assign globally AFTER construction so batch remove buttons work
+    window.planktonClassifier = planktonClassifier;
 });
-
-// Make it globally accessible for the remove buttons
-window.planktonClassifier = planktonClassifier;

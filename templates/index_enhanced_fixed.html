@@ -3,18 +3,20 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Plankton Species Classifier | AI-Powered Marine Biology Research Platform</title>
+    <title>Plankton Species Classifier | AI-Powered Marine Biology</title>
 
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon.png') }}">
 
-    <!-- Tailwind CSS -->
+    <!-- Design System -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='uniform-colors.css') }}">
+
+    <!-- Tailwind (layout utilities only) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
 
     <!-- Chart.js -->
@@ -23,226 +25,255 @@
     <script>
         tailwind.config = {
             darkMode: "class",
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'sans': ['Inter', 'system-ui', 'sans-serif']
-                    },
-                    colors: {
-                        'blue': {
-                            50: '#eff6ff',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                        }
-                    }
-                }
-            }
+            theme: { extend: { fontFamily: { 'sans': ['Inter','system-ui','sans-serif'], 'display':['Outfit','Inter','sans-serif'] } } }
         }
     </script>
 
+    <!-- Flash prevention -->
+    <script>
+        (function(){
+            var t = localStorage.getItem('theme');
+            if(t==='light') document.documentElement.classList.remove('dark');
+            else document.documentElement.classList.add('dark');
+        })();
+    </script>
+
     <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
+        /* --- Page-specific overrides --- */
+        .upload-area { border:2px dashed var(--border-main); background:var(--bg-elevated); border-radius:1.25rem; transition:all .35s; cursor:pointer; }
+        .upload-area:hover, .upload-area.dragover { border-color:var(--bio-400); background:rgba(13,148,136,.06); box-shadow:0 0 30px rgba(13,148,136,.1); }
 
-        .gradient-bg {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        }
+        /* Particle canvas */
+        #particles-canvas { position:fixed; inset:0; z-index:-1; pointer-events:none; }
 
-        .prediction-glow {
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+        /* Hero title shimmer */
+        .hero-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 2.25rem;
+            line-height: 1.2;
+            background: linear-gradient(135deg, var(--ocean-500), var(--bio-400), var(--ocean-300));
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 8s ease-in-out infinite;
         }
+        html.dark .hero-title {
+            background: linear-gradient(135deg, var(--ocean-200), var(--bio-300), var(--ocean-100));
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shimmer 8s ease-in-out infinite;
+        }
+        @keyframes shimmer { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 
-        .tab-active {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: white;
+        /* Badge chip */
+        .badge {
+            display:inline-flex; align-items:center; gap:.375rem;
+            padding:.3rem .75rem; border-radius:2rem;
+            font-size:.75rem; font-weight:600; font-family:'Outfit',sans-serif;
+            background:rgba(13,148,136,.12); color:var(--bio-500);
+            border:1px solid rgba(13,148,136,.2);
         }
+        html.dark .badge { background:rgba(56,178,172,.12); color:var(--bio-300); border-color:rgba(56,178,172,.25); }
 
-        .upload-area {
-            border: 2px dashed #d1d5db;
-            transition: all 0.3s ease;
-        }
-
-        .upload-area.dragover {
-            border-color: #3b82f6;
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(59, 130, 246, 0.3);
-            border-radius: 10px;
-        }
-        .dark ::-webkit-scrollbar-thumb {
-            background: rgba(148, 163, 184, 0.3);
-        }
+        /* Species card hover */
+        .species-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-glow), var(--shadow-card); }
+        .species-card { transition: transform .25s, box-shadow .25s; }
     </style>
 </head>
 
-<body class="bg-gray-50 dark:bg-gray-900 font-sans text-gray-900 dark:text-gray-100 transition-colors duration-300">
+<body class="font-sans">
+    <!-- Floating particles -->
+    <canvas id="particles-canvas"></canvas>
 
-    <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+    <!-- ===== HEADER ===== -->
+    <header class="sticky top-0 z-50" style="background:var(--bg-card); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid var(--border-main);">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <!-- Logo and Title -->
-                <div class="flex items-center space-x-4">
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
-                            <span class="material-symbols-outlined text-white text-xl">biotech</span>
-                        </div>
+
+                <!-- Logo -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 gradient-ocean rounded-xl flex items-center justify-center shadow-lg animate-float" style="animation-duration:5s;">
+                        <span class="material-symbols-outlined text-white text-xl">biotech</span>
                     </div>
-                    <div>
-                        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Plankton Species Classifier</h1>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">AI-Powered Marine Biology Research Platform</p>
+                    <div class="hidden xs:block">
+                        <h1 class="text-lg font-display font-bold text-gradient">PlanktonAI</h1>
+                        <p class="text-xs text-muted" style="margin-top:-2px;">Marine Biology Platform</p>
                     </div>
                 </div>
 
-                <!-- Navigation -->
-                <nav class="hidden md:flex items-center space-x-4">
-                    <button id="modelInfoBtn" class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <!-- Nav -->
+                <nav class="flex items-center gap-2">
+                    <button id="modelInfoBtn" class="hidden md:flex btn-ghost text-xs">
                         <span class="material-symbols-outlined text-sm mr-1">info</span>
                         Model Info
                     </button>
+                    <a href="/traditional" class="hidden sm:flex btn-ghost text-xs">
+                        <span class="material-symbols-outlined text-sm mr-1">precision_manufacturing</span>
+                        Traditional ML
+                    </a>
+                    <a href="/compare" class="btn-ocean text-xs">
+                        <span class="material-symbols-outlined text-sm mr-1.5">compare_arrows</span>
+                        <span class="hidden sm:inline">Compare</span><span class="sm:hidden">⚡</span>
+                    </a>
                 </nav>
 
-                <!-- Theme Toggle -->
-                <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                    <span class="material-symbols-outlined">light_mode</span>
-                </button>
+                <!-- Right -->
+                <div class="flex items-center gap-2">
+                    <div class="md:hidden relative">
+                        <button id="mobileMenuBtn" class="theme-btn">
+                            <span class="material-symbols-outlined text-lg">menu</span>
+                        </button>
+                        <div id="mobileMenu" class="hidden absolute right-0 top-12 glass-card py-2 w-48 z-50">
+                            <a href="/traditional" class="flex items-center px-4 py-2.5 text-sm text-secondary hover:text-primary" style="transition:.15s;">
+                                <span class="material-symbols-outlined text-sm mr-2">precision_manufacturing</span>Traditional ML
+                            </a>
+                            <button id="modelInfoBtnMobile" class="flex items-center w-full px-4 py-2.5 text-sm text-secondary hover:text-primary" style="transition:.15s;">
+                                <span class="material-symbols-outlined text-sm mr-2">info</span>Model Info
+                            </button>
+                        </div>
+                    </div>
+                    <button id="theme-toggle" class="theme-btn" title="Toggle dark/light mode">
+                        <span class="material-symbols-outlined text-lg" id="theme-icon">dark_mode</span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- ===== MAIN ===== -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-        <!-- Hero Section -->
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full mb-4">
-                <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">microscope</span>
+        <!-- Hero -->
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center gap-2 mb-4">
+                <span class="badge"><span class="status-dot"></span> EfficientNet-B2 · 89.51% Accuracy</span>
             </div>
-            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Advanced Plankton Species Classification
-            </h2>
-            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                Research-grade AI platform for marine biology with batch processing, species database, and export capabilities
+            <h2 class="hero-title mb-3">Advanced Plankton<br class="sm:hidden"> Species Classification</h2>
+            <p class="text-secondary max-w-xl mx-auto text-base leading-relaxed">
+                Research-grade AI for marine biology — identify plankton species from microscopy images with batch processing, species database, and data export.
             </p>
         </div>
 
+        <!-- CTA Banner -->
+        <div class="glass-card p-6 mb-10">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="stat-ring">
+                        <span class="material-symbols-outlined text-xl" style="color:var(--bio-400);">compare_arrows</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-primary text-lg">CNN vs Traditional ML</h3>
+                        <p class="text-secondary text-sm">See why our CNN outperforms traditional approaches by +34.46%</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <a href="/compare" class="btn-glow text-sm">
+                        <span class="material-symbols-outlined text-sm mr-1.5">compare_arrows</span>Compare Live
+                    </a>
+                    <a href="/traditional" class="btn-ghost text-sm">Try Traditional ML</a>
+                </div>
+            </div>
+        </div>
+
         <!-- Tab Navigation -->
-        <div class="flex flex-wrap justify-center mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2">
-            <button id="tab-single" class="tab px-6 py-3 rounded-lg font-medium transition-all duration-200 tab-active mr-2 mb-2">
-                <span class="material-symbols-outlined text-sm mr-2">image</span>
-                Single Image
+        <div class="flex flex-wrap justify-center mb-8 glass-card p-1.5">
+            <button id="tab-single" class="tab tab-pill active mr-1.5 mb-1">
+                <span class="material-symbols-outlined text-base">image</span> Single Image
             </button>
-            <button id="tab-batch" class="tab px-6 py-3 rounded-lg font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 mr-2 mb-2">
-                <span class="material-symbols-outlined text-sm mr-2">burst_mode</span>
-                Batch Processing
+            <button id="tab-batch" class="tab tab-pill mr-1.5 mb-1">
+                <span class="material-symbols-outlined text-base">burst_mode</span> Batch
             </button>
-            <button id="tab-species" class="tab px-6 py-3 rounded-lg font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 mb-2">
-                <span class="material-symbols-outlined text-sm mr-2">database</span>
-                Species Database
+            <button id="tab-species" class="tab tab-pill mb-1">
+                <span class="material-symbols-outlined text-base">database</span> Species Database
             </button>
         </div>
 
-        <!-- Single Image Tab Content -->
+        <!-- ========== SINGLE IMAGE TAB ========== -->
         <div id="content-single" class="tab-content">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
-                <!-- Left Column: Upload Section -->
-                <div class="lg:col-span-1">
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-
-                        <!-- Upload Header -->
-                        <div class="bg-gradient-to-r from-blue-500 to-blue-700 p-6 text-white">
-                            <div class="flex items-center space-x-3">
-                                <span class="material-symbols-outlined text-2xl">cloud_upload</span>
+                <!-- Upload Column (2/5) -->
+                <div class="lg:col-span-2">
+                    <div class="glass-card overflow-hidden">
+                        <!-- Header ribbon -->
+                        <div class="gradient-ocean p-5 text-white">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-2xl opacity-90">cloud_upload</span>
                                 <div>
-                                    <h3 class="text-lg font-semibold">Upload Image</h3>
-                                    <p class="text-blue-100 text-sm">Choose a plankton microscopy image</p>
+                                    <h3 class="font-display font-semibold text-lg">Upload Image</h3>
+                                    <p class="text-sm opacity-80">Plankton microscopy image</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="p-6">
-                            <!-- Upload State -->
+                        <div class="p-5">
+                            <!-- Upload -->
                             <div id="upload-state">
-                                <div id="file-upload-area" class="upload-area border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300">
-                                    <span class="material-symbols-outlined text-gray-400 text-4xl mb-4 block">add_photo_alternate</span>
-                                    <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Drop image here</h4>
-                                    <p class="text-gray-500 dark:text-gray-500 mb-4">or</p>
-                                    <button id="upload-image-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                        Browse Files
-                                    </button>
-                                    <p class="text-xs text-gray-400 mt-3">PNG, JPG, JPEG up to 10MB</p>
+                                <div id="file-upload-area" class="upload-area p-8 text-center">
+                                    <div class="animate-float" style="animation-duration:4s;">
+                                        <span class="material-symbols-outlined text-5xl block mb-3" style="color:var(--bio-400); opacity:.6;">add_photo_alternate</span>
+                                    </div>
+                                    <h4 class="font-display font-semibold text-primary text-lg mb-1">Drop image here</h4>
+                                    <p class="text-muted text-sm mb-4">or</p>
+                                    <button id="upload-image-btn" class="btn-ocean text-sm">Browse Files</button>
+                                    <p class="text-xs text-muted mt-4">PNG, JPG, JPEG up to 10MB</p>
                                 </div>
 
-                                <!-- URL Upload -->
-                                <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Or paste image URL:</label>
-                                    <div class="flex space-x-2">
-                                        <input id="image-url" type="url" placeholder="https://example.com/image.jpg" class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <button id="load-url-btn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
-                                            Load
-                                        </button>
+                                <!-- URL input -->
+                                <div class="mt-4 p-4 glass-elevated">
+                                    <label class="block text-xs font-semibold text-primary mb-2">Or paste image URL</label>
+                                    <div class="flex gap-2">
+                                        <input id="image-url" type="url" placeholder="https://example.com/plankton.jpg" class="input-glass flex-1 text-sm">
+                                        <button id="load-url-btn" class="btn-ocean text-sm px-4">Load</button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Image Preview State -->
+                            <!-- Preview -->
                             <div id="image-preview-state" class="hidden">
-                                <div class="relative bg-gray-100 dark:bg-gray-700 rounded-xl p-4 mb-4">
-                                    <img id="preview-image" class="w-full h-48 object-cover rounded-lg shadow-md" alt="Preview">
-                                    <button id="remove-image" class="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors">
+                                <div class="relative rounded-xl overflow-hidden mb-4 glass-elevated p-3">
+                                    <img id="preview-image" class="w-full h-48 object-cover rounded-lg" alt="Preview">
+                                    <button id="remove-image" class="absolute top-1 right-1 w-8 h-8 rounded-full flex items-center justify-center text-white" style="background:rgba(225,29,72,.85); backdrop-filter:blur(4px);">
                                         <span class="material-symbols-outlined text-sm">close</span>
                                     </button>
                                 </div>
-                                <button id="analyze-btn" class="w-full bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105">
-                                    <span class="material-symbols-outlined text-sm mr-2">analytics</span>
+                                <button id="analyze-btn" class="btn-glow w-full py-3.5 text-base">
+                                    <span class="material-symbols-outlined mr-2">analytics</span>
                                     Analyze Species
                                 </button>
                             </div>
 
-                            <!-- Loading State -->
-                            <div id="loading-state" class="hidden text-center py-8">
-                                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-                                <p class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Analyzing Image...</p>
-                                <p class="text-sm text-gray-500 dark:text-gray-500">AI processing with EfficientNetV2-S</p>
-                                <div class="mt-4 bg-gray-100 dark:bg-gray-700 rounded-lg p-3">
-                                    <div id="progress-text" class="text-xs text-gray-600 dark:text-gray-400">Processing...</div>
+                            <!-- Loading -->
+                            <div id="loading-state" class="hidden text-center py-10">
+                                <div class="inline-block mb-5 relative">
+                                    <div class="w-14 h-14 rounded-full border-2 border-transparent animate-spin" style="border-top-color:var(--bio-400); border-right-color:var(--ocean-400);"></div>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-lg" style="color:var(--bio-400);">biotech</span>
+                                    </div>
+                                </div>
+                                <p class="font-display font-semibold text-primary text-lg mb-1">Analyzing Image…</p>
+                                <p class="text-sm text-secondary">AI processing with EfficientNet-B2</p>
+                                <div class="mt-4 glass-elevated rounded-lg p-3">
+                                    <div id="progress-text" class="text-xs text-secondary">Processing…</div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Model Info -->
-                        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-t border-gray-200 dark:border-gray-600">
-                            <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Model Information</h4>
+                        <!-- Model info footer -->
+                        <div class="p-5 glass-elevated" style="border-radius:0; border-top:1px solid var(--border-main);">
+                            <h4 class="text-xs font-display font-semibold text-primary mb-3 uppercase tracking-wider opacity-70">Model Info</h4>
                             <div class="space-y-2 text-xs">
+                                <div class="flex justify-between"><span class="text-secondary">Architecture</span><span id="model-architecture" class="font-semibold text-primary">Loading…</span></div>
+                                <div class="flex justify-between"><span class="text-secondary">Classes</span><span id="model-classes" class="font-semibold text-primary">Loading…</span></div>
+                                <div class="flex justify-between"><span class="text-secondary">Accuracy</span><span id="model-accuracy" class="font-semibold" style="color:var(--bio-400);">Loading…</span></div>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-gray-600 dark:text-gray-400">Architecture:</span>
-                                    <span id="model-architecture" class="font-semibold text-gray-800 dark:text-gray-200">Loading...</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-gray-600 dark:text-gray-400">Classes:</span>
-                                    <span id="model-classes" class="font-semibold text-gray-800 dark:text-gray-200">Loading...</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-gray-600 dark:text-gray-400">Accuracy:</span>
-                                    <span id="model-accuracy" class="font-semibold text-green-600 dark:text-green-400">Loading...</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-gray-600 dark:text-gray-400">Status:</span>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                                        <span id="model-status" class="font-semibold text-green-600">Loading</span>
+                                    <span class="text-secondary">Status</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="status-dot"></span>
+                                        <span id="model-status" class="font-semibold" style="color:var(--bio-400);">Loading</span>
                                     </div>
                                 </div>
                             </div>
@@ -250,82 +281,79 @@
                     </div>
                 </div>
 
-                <!-- Right Column: Results Section -->
-                <div class="lg:col-span-2">
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-
-                        <!-- Results Header -->
-                        <div class="bg-gradient-to-r from-green-500 to-green-700 p-6 text-white">
-                            <div class="flex items-center space-x-3">
-                                <span class="material-symbols-outlined text-2xl">analytics</span>
+                <!-- Results Column (3/5) -->
+                <div class="lg:col-span-3">
+                    <div class="glass-card overflow-hidden">
+                        <!-- Header -->
+                        <div class="gradient-deep p-5 text-white">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-2xl opacity-90">analytics</span>
                                 <div>
-                                    <h3 class="text-lg font-semibold">Classification Results</h3>
-                                    <p class="text-green-100 text-sm">AI-powered species identification</p>
+                                    <h3 class="font-display font-semibold text-lg">Classification Results</h3>
+                                    <p class="text-sm opacity-80">AI-powered species identification</p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Default State -->
-                        <div id="analysis-default" class="p-12 text-center">
-                            <div class="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <span class="material-symbols-outlined text-gray-400 text-4xl">image_search</span>
+                        <!-- Default -->
+                        <div id="analysis-default" class="p-14 text-center">
+                            <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 glass-elevated animate-float" style="animation-duration:5s;">
+                                <span class="material-symbols-outlined text-4xl" style="color:var(--text-muted); opacity:.5;">image_search</span>
                             </div>
-                            <h4 class="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">Ready for Analysis</h4>
-                            <p class="text-gray-500 dark:text-gray-500">Upload a plankton image to see AI classification results</p>
+                            <h4 class="font-display font-semibold text-lg text-primary mb-2">Ready for Analysis</h4>
+                            <p class="text-secondary text-sm">Upload a plankton image to see AI classification results</p>
                         </div>
 
-                        <!-- Results State -->
+                        <!-- Results -->
                         <div id="analysis-results" class="hidden">
-                            <!-- Top Prediction -->
                             <div class="p-8">
-                                <div class="gradient-bg rounded-2xl p-8 text-white text-center prediction-glow mb-8">
-                                    <div class="flex items-center justify-center mb-4">
-                                        <img id="result-image-small" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg" alt="Result">
-                                    </div>
-                                    <h2 class="text-2xl font-bold mb-2">Predicted Species</h2>
-                                    <h1 id="top-species" class="text-4xl font-bold mb-4">Species Name</h1>
-                                    <div class="flex items-center justify-center space-x-4">
-                                        <div class="text-center">
-                                            <div id="top-confidence" class="text-3xl font-bold">95.2%</div>
-                                            <div class="text-sm opacity-90">Confidence</div>
+                                <!-- Star prediction banner -->
+                                <div class="gradient-bg rounded-2xl p-8 text-white text-center prediction-glow mb-8 relative overflow-hidden">
+                                    <div class="relative z-10">
+                                        <div class="flex items-center justify-center mb-4">
+                                            <img id="result-image-small" class="w-20 h-20 rounded-full object-cover border-4 border-white/30 shadow-xl" alt="Result">
                                         </div>
-                                        <div id="confidence-status" class="px-4 py-2 bg-white bg-opacity-20 rounded-full text-sm font-semibold">
-                                            High Confidence
+                                        <p class="text-sm font-medium opacity-80 mb-1 uppercase tracking-wider">Predicted Species</p>
+                                        <h1 id="top-species" class="text-3xl sm:text-4xl font-display font-bold mb-4">Species Name</h1>
+                                        <div class="flex items-center justify-center gap-4 flex-wrap">
+                                            <div class="text-center">
+                                                <div id="top-confidence" class="text-3xl font-display font-bold">95.2%</div>
+                                                <div class="text-sm opacity-80">Confidence</div>
+                                            </div>
+                                            <div id="confidence-status" class="px-4 py-2 bg-white/15 backdrop-blur rounded-full text-sm font-semibold border border-white/20">
+                                                High Confidence
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Top 5 Predictions Chart -->
+                                <!-- Chart -->
                                 <div class="mb-8">
-                                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center space-x-2">
-                                        <span class="material-symbols-outlined">bar_chart</span>
-                                        <span>Top 5 Predictions</span>
+                                    <h3 class="font-display font-semibold text-primary mb-4 flex items-center gap-2">
+                                        <span class="material-symbols-outlined" style="color:var(--ocean-400);">bar_chart</span>
+                                        Top 5 Predictions
                                     </h3>
-                                    <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
-                                        <canvas id="predictions-chart" class="w-full" style="height: 350px;"></canvas>
+                                    <div class="glass-elevated rounded-xl p-5">
+                                        <canvas id="predictions-chart" class="w-full" style="height:320px;"></canvas>
                                     </div>
                                 </div>
 
-                                <!-- Species Information -->
-                                <div id="species-info" class="mb-8 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 hidden">
-                                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
-                                        <span class="material-symbols-outlined">info</span>
-                                        <span>Species Information</span>
+                                <!-- Species info -->
+                                <div id="species-info" class="mb-8 glass-elevated rounded-xl p-5 hidden" style="border-color:var(--border-accent);">
+                                    <h3 class="font-display font-semibold text-primary mb-3 flex items-center gap-2">
+                                        <span class="material-symbols-outlined" style="color:var(--bio-400);">info</span>
+                                        Species Information
                                     </h3>
-                                    <div id="species-details" class="space-y-4">
-                                        <!-- Populated by JavaScript -->
-                                    </div>
+                                    <div id="species-details" class="space-y-3 text-sm"></div>
                                 </div>
 
-                                <!-- Detailed Results -->
-                                <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
+                                <!-- Detailed results -->
+                                <div class="glass-elevated rounded-xl p-5">
                                     <button id="toggle-details" class="flex items-center justify-between w-full text-left">
-                                        <span class="text-lg font-semibold text-gray-900 dark:text-white">Detailed Results</span>
-                                        <span class="material-symbols-outlined text-gray-600 dark:text-gray-400 transform transition-transform" id="toggle-icon">expand_more</span>
+                                        <span class="font-display font-semibold text-primary">Detailed Results</span>
+                                        <span class="material-symbols-outlined text-secondary transition-transform duration-200" id="toggle-icon">expand_more</span>
                                     </button>
-                                    <div id="detailed-results" class="hidden mt-4 space-y-3">
-                                        <!-- Populated by JavaScript -->
-                                    </div>
+                                    <div id="detailed-results" class="hidden mt-4 space-y-2"></div>
                                 </div>
                             </div>
                         </div>
@@ -334,71 +362,64 @@
             </div>
         </div>
 
-        <!-- Batch Processing Tab Content -->
+        <!-- ========== BATCH TAB ========== -->
         <div id="content-batch" class="tab-content hidden">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-700 p-6 text-white">
-                    <div class="flex items-center space-x-3">
-                        <span class="material-symbols-outlined text-2xl">burst_mode</span>
+            <div class="glass-card overflow-hidden">
+                <div class="gradient-ocean p-5 text-white">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-2xl opacity-90">burst_mode</span>
                         <div>
-                            <h3 class="text-lg font-semibold">Batch Image Processing</h3>
-                            <p class="text-blue-100 text-sm">Process multiple images simultaneously (max 50)</p>
+                            <h3 class="font-display font-semibold text-lg">Batch Image Processing</h3>
+                            <p class="text-sm opacity-80">Process up to 50 images simultaneously</p>
                         </div>
                     </div>
                 </div>
-
                 <div class="p-8">
-                    <div id="batch-upload-area" class="upload-area border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-12 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 mb-6">
-                        <span class="material-symbols-outlined text-gray-400 text-6xl mb-4 block">add_photo_alternate</span>
-                        <h4 class="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-2">Drop multiple images here</h4>
-                        <p class="text-gray-500 dark:text-gray-500 mb-4">or</p>
-                        <button id="batch-upload-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors text-lg">
-                            <span class="material-symbols-outlined text-sm mr-2">folder_open</span>
-                            Select Multiple Files
+                    <div id="batch-upload-area" class="upload-area p-12 text-center mb-6">
+                        <div class="animate-float" style="animation-duration:5s;">
+                            <span class="material-symbols-outlined text-6xl block mb-4" style="color:var(--bio-400); opacity:.5;">add_photo_alternate</span>
+                        </div>
+                        <h4 class="font-display font-semibold text-primary text-xl mb-2">Drop multiple images here</h4>
+                        <p class="text-muted text-sm mb-5">or</p>
+                        <button id="batch-upload-btn" class="btn-ocean text-base px-6 py-3">
+                            <span class="material-symbols-outlined text-sm mr-2">folder_open</span>Select Files
                         </button>
-                        <p class="text-sm text-gray-400 mt-4">PNG, JPG, JPEG files • Max 50 images • 10MB per file</p>
+                        <p class="text-xs text-muted mt-4">PNG, JPG, JPEG • Max 50 images • 10MB each</p>
                     </div>
 
                     <div id="batch-preview" class="hidden">
                         <div class="flex items-center justify-between mb-4">
-                            <h4 class="text-lg font-semibold">Selected Images</h4>
-                            <button id="batch-clear" class="text-red-600 hover:text-red-700 text-sm">Clear All</button>
+                            <h4 class="font-display font-semibold text-primary">Selected Images</h4>
+                            <button id="batch-clear" class="text-sm font-medium" style="color:var(--coral-500);">Clear All</button>
                         </div>
-                        <div id="batch-images" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
-                            <!-- Populated by JavaScript -->
-                        </div>
-                        <button id="batch-analyze" class="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200">
-                            <span class="material-symbols-outlined text-sm mr-2">play_arrow</span>
-                            Process All Images
+                        <div id="batch-images" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6"></div>
+                        <button id="batch-analyze" class="btn-glow w-full py-3.5 text-base">
+                            <span class="material-symbols-outlined mr-2">play_arrow</span>Process All Images
                         </button>
                     </div>
 
                     <div id="batch-processing" class="hidden">
-                        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6">
-                            <div class="flex items-center mb-4">
-                                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
-                                <span class="font-medium">Processing images...</span>
+                        <div class="glass-elevated rounded-xl p-6">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-6 h-6 rounded-full border-2 border-transparent animate-spin" style="border-top-color:var(--bio-400);"></div>
+                                <span class="font-display font-medium text-primary">Processing images…</span>
                             </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                <div id="batch-progress" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            <div class="progress-track">
+                                <div id="batch-progress" class="progress-fill" style="width:0%"></div>
                             </div>
-                            <p id="batch-status" class="text-sm text-gray-600 dark:text-gray-400 mt-2">Processing 0 of 0 images...</p>
+                            <p id="batch-status" class="text-xs text-secondary mt-2">Processing 0 of 0 images…</p>
                         </div>
                     </div>
 
                     <div id="batch-results" class="hidden">
-                        <h4 class="text-lg font-semibold mb-4">Batch Results</h4>
-                        <div id="batch-results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <!-- Populated by JavaScript -->
-                        </div>
-                        <div class="mt-6 flex space-x-4">
-                            <button id="batch-export-csv" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                <span class="material-symbols-outlined text-sm mr-2">download</span>
-                                Export to CSV
+                        <h4 class="font-display font-semibold text-primary text-lg mb-4">Batch Results</h4>
+                        <div id="batch-results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                        <div class="mt-6 flex gap-4">
+                            <button id="batch-export-csv" class="btn-ocean flex-1 text-sm">
+                                <span class="material-symbols-outlined text-sm mr-1.5">download</span>Export CSV
                             </button>
-                            <button id="batch-export-excel" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                <span class="material-symbols-outlined text-sm mr-2">table_view</span>
-                                Export to Excel
+                            <button id="batch-export-excel" class="btn-ghost flex-1 text-sm">
+                                <span class="material-symbols-outlined text-sm mr-1.5">table_view</span>Export Excel
                             </button>
                         </div>
                     </div>
@@ -406,52 +427,111 @@
             </div>
         </div>
 
-        <!-- Species Database Tab Content -->
+        <!-- ========== SPECIES DATABASE TAB ========== -->
         <div id="content-species" class="tab-content hidden">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <div class="bg-gradient-to-r from-green-500 to-green-700 p-6 text-white">
-                    <div class="flex items-center space-x-3">
-                        <span class="material-symbols-outlined text-2xl">database</span>
+            <div class="glass-card overflow-hidden">
+                <div class="gradient-deep p-5 text-white">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-2xl opacity-90">database</span>
                         <div>
-                            <h3 class="text-lg font-semibold">Species Database</h3>
-                            <p class="text-green-100 text-sm">Comprehensive plankton species information · <span id="species-count">Loading...</span> species</p>
+                            <h3 class="font-display font-semibold text-lg">Species Database</h3>
+                            <p class="text-sm opacity-80">Comprehensive plankton reference · <span id="species-count">Loading…</span> species</p>
                         </div>
                     </div>
                 </div>
-
                 <div class="p-6">
-                    <!-- Search Bar -->
-                    <div class="mb-6">
-                        <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</span>
-                            <input
-                                id="species-search"
-                                type="text"
-                                placeholder="Search species by name or characteristics..."
-                                class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                            >
-                        </div>
+                    <div class="mb-6 relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
+                        <input id="species-search" type="text" placeholder="Search species…" class="input-glass w-full pl-10">
                     </div>
-
-                    <!-- Species Grid -->
-                    <div id="species-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Populated by JavaScript -->
-                    </div>
-
-                    <!-- Loading State -->
-                    <div id="species-loading" class="text-center py-12">
-                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-                        <p class="text-gray-600 dark:text-gray-400">Loading species database...</p>
+                    <div id="species-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+                    <div id="species-loading" class="text-center py-14">
+                        <div class="w-12 h-12 rounded-full border-2 border-transparent animate-spin mx-auto mb-4" style="border-top-color:var(--bio-400);"></div>
+                        <p class="text-secondary">Loading species database…</p>
                     </div>
                 </div>
             </div>
+        </div>
     </div>
 
-    <!-- Hidden File Inputs -->
+    <!-- ===== FOOTER ===== -->
+    <footer class="mt-16 pb-8 text-center">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="glass-elevated rounded-xl p-6 inline-flex flex-col items-center">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-sm" style="color:var(--bio-400);">biotech</span>
+                    <span class="font-display font-bold text-sm text-gradient">PlanktonAI</span>
+                </div>
+                <p class="text-xs text-muted">AI-Powered Marine Biology Research Platform · EfficientNet-B2 · 89.51% Accuracy</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Hidden inputs -->
     <input type="file" id="file-input" class="hidden" accept="image/*">
     <input type="file" id="batch-file-input" class="hidden" accept="image/*" multiple>
 
-    <!-- JavaScript -->
+    <!-- Scripts -->
+    <script>
+        // Mobile menu
+        document.addEventListener('DOMContentLoaded', function(){
+            var mb = document.getElementById('mobileMenuBtn');
+            var mm = document.getElementById('mobileMenu');
+            var mi = document.getElementById('modelInfoBtnMobile');
+            if(mb&&mm){
+                mb.addEventListener('click',()=>mm.classList.toggle('hidden'));
+                document.addEventListener('click',e=>{if(!mb.contains(e.target)&&!mm.contains(e.target))mm.classList.add('hidden');});
+            }
+            if(mi) mi.addEventListener('click',()=>{mm&&mm.classList.add('hidden');document.getElementById('modelInfoBtn')?.click();});
+            // Sync icon
+            document.getElementById('theme-icon').textContent = document.documentElement.classList.contains('dark') ? 'dark_mode' : 'light_mode';
+        });
+
+        // Particle effect
+        (function(){
+            var c = document.getElementById('particles-canvas');
+            if(!c) return;
+            var ctx = c.getContext('2d');
+            var particles = [];
+            var N = 40;
+
+            function resize(){ c.width=window.innerWidth; c.height=window.innerHeight; }
+            window.addEventListener('resize', resize);
+            resize();
+
+            for(var i=0;i<N;i++){
+                particles.push({
+                    x: Math.random()*c.width,
+                    y: Math.random()*c.height,
+                    r: Math.random()*2+0.5,
+                    dx: (Math.random()-.5)*.3,
+                    dy: (Math.random()-.5)-.2,
+                    o: Math.random()*.3+.1
+                });
+            }
+
+            function draw(){
+                ctx.clearRect(0,0,c.width,c.height);
+                var isDark = document.documentElement.classList.contains('dark');
+                particles.forEach(function(p){
+                    ctx.beginPath();
+                    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+                    ctx.fillStyle = isDark
+                        ? 'rgba(56,178,172,'+(p.o*.5)+')'
+                        : 'rgba(13,125,227,'+(p.o*.25)+')';
+                    ctx.fill();
+                    p.x += p.dx;
+                    p.y += p.dy;
+                    if(p.x<0) p.x=c.width;
+                    if(p.x>c.width) p.x=0;
+                    if(p.y<0) p.y=c.height;
+                    if(p.y>c.height) p.y=0;
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+    </script>
     <script src="/static/app_enhanced_fixed.js"></script>
 </body>
 </html>
